@@ -67,15 +67,17 @@
       private exwm variable for now.")
     (add-hook 'spacemacs-transient-state-before-show-hook
               (lambda()
-                (message "hooking into transient start")
-                (when (not exwm--keyboard-grabbed)
-                  (message "temporary switch to line mode for transient state")
-                  (setq exwm--switch-to-char-after-transient (current-buffer))
-                  (exwm-input-grab-keyboard))
+                ;; (message "hooking into transient start")
+                ;; (when (not exwm--keyboard-grabbed)
+                ;;   (message "temporary switch to line mode for transient state")
+                ;;   (setq exwm--switch-to-char-after-transient (current-buffer))
+                ;;   (exwm-input-grab-keyboard))
+                (message "enable Passthrough")
                 (setq exwm-input-line-mode-passthrough t)))
     (add-hook 'spacemacs-transient-state-after-close-hook
               (lambda()
-                (setq exwm-input-line-mode-passthrough nil)))
+                (setq exwm-input-line-mode-passthrough nil)
+                (message "disable Passthrough")))
 
     ;; if a buffer is redisplayed that has been marked for possible
     ;; back-to-char-mode behaviour, do that, unregister.
