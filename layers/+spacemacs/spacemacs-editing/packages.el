@@ -23,6 +23,7 @@
         move-text
         (origami :toggle (eq 'origami dotspacemacs-folding-method))
         smartparens
+        (evil-smartparens :toggle dotspacemacs-smartparens-strict-mode)
         (spacemacs-whitespace-cleanup :location local)
         undo-tree
         uuidgen
@@ -250,6 +251,16 @@
       ;; Note: The key binding for the fold transient state is defined in
       ;; evil config
       )))
+
+(defun spacemacs-editing/init-evil-smartparens ()
+  (use-package evil-smartparens
+    :defer t
+    :init
+    (progn
+      (when dotspacemacs-smartparens-strict-mode
+        (spacemacs/add-to-hooks 'evil-smartparens-mode '(prog-mode-hook comint-mode-hook))))
+    :config
+    (spacemacs|diminish evil-smartparens-mode)))
 
 (defun spacemacs-editing/init-smartparens ()
   (use-package smartparens
