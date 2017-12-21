@@ -7,7 +7,7 @@
   '(
     ;; Assume that factor is installed, and emacs lisp files are correctly
     ;; located in site-lisp
-    (factor-mode :location :site)
+    (factor-mode :location site)
     ))
 
 (defun factor/init-factor-mode()
@@ -23,11 +23,11 @@
               ("me" . "eval")
               ("mc" . "compile")
               ("mg" . "nav")
-              ))
+              ("ms" . "repl")))
       (spacemacs/set-leader-keys-for-major-mode 'factor-mode
         "'" 'run-factor
 
-        "cc" ' fuel-run-file
+        "cc" 'fuel-run-file
 
         "ef" 'fuel-eval-definition
         "er" 'fuel-eval-region
@@ -46,5 +46,23 @@
         "rw" 'fuel-refactor-rename-word
         "ra" 'fuel-refactor-extract-article
         "rg" 'fuel-refactor-make-generic
-        )))
+
+        "ss" 'run-factor
+
+        "hh" 'fuel-help
+        "he" 'factor//fuel-stack-effect
+        "hp" 'fuel-apropos
+        "hv" 'fuel-show-file-words
+        "h<" 'fuel-show-callers
+        "h>" 'fuel-show-callees
+
+        )
+
+      (spacemacs/set-leader-keys-for-major-mode 'fuel-listener-mode
+        "v" 'fuel-edit-vocabulary
+        "r" 'fuel-refresh-all
+        "Ts" 'fuel-stack-mode
+        )
+
+      (evilified-state-evilify fuel-help-mode fuel-help-mode-map)))
   )
