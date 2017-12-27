@@ -12,24 +12,26 @@
 
 (defun factor/init-factor-mode()
   (use-package factor-mode
-    :commands factor-mode
+    :commands factor-mode run-factor fuel-mode
     :init
-    (add-to-list 'yas-snippet-dirs (expand-file-name
-                                      "snippets"
-                                      (configuration-layer/get-layer-local-dir
-                                       'factor))
-                 t)
+    (progn
+      (spacemacs/register-repl 'fuel-mode 'run-factor)
+      (add-to-list 'yas-snippet-dirs (expand-file-name
+                                     "snippets"
+                                     (configuration-layer/get-layer-local-dir
+                                      'factor))
+                  t))
     :config
     (progn
       (require 'fuel-mode)
-      (spacemacs/register-repl 'fuel-mode 'run-factor)
       (mapc (lambda (x)
               (spacemacs/declare-prefix-for-mode 'factor-mode (car x) (cdr x)))
             '(("mh" . "help")
               ("me" . "eval")
               ("mc" . "compile")
               ("mg" . "nav")
-              ("ms" . "repl")))
+              ("ms" . "repl")
+              ("mS" . "scaffold")))
       (spacemacs/set-leader-keys-for-major-mode 'factor-mode
         "'" 'run-factor
 
@@ -62,12 +64,16 @@
         "h<" 'fuel-show-callers
         "h>" 'fuel-show-callees
 
+        "Sv" 'fuel-scaffold-vocab
+        "Sh" 'fuel-scaffold-help
         )
 
       (spacemacs/set-leader-keys-for-major-mode 'fuel-listener-mode
         "v" 'fuel-edit-vocabulary
         "r" 'fuel-refresh-all
         "Ts" 'fuel-stack-mode
+        "w" 'fuel-help
+        "Sv" 'fuel-scaffold-vocab
         )
 
       (evilified-state-evilify fuel-help-mode fuel-help-mode-map)))
