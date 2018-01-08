@@ -10,17 +10,21 @@
     (factor-mode :location site)
     ))
 
+(defun factor/post-init-yasnippet ()
+  (add-to-list 'yas-snippet-dirs (expand-file-name
+                                  "snippets"
+                                  (configuration-layer/get-layer-local-dir
+                                   'factor))
+               t))
+
 (defun factor/init-factor-mode()
   (use-package factor-mode
     :commands factor-mode run-factor fuel-mode
+    :mode "\\.factor\\'"
     :init
     (progn
       (spacemacs/register-repl 'fuel-mode 'run-factor)
-      (add-to-list 'yas-snippet-dirs (expand-file-name
-                                     "snippets"
-                                     (configuration-layer/get-layer-local-dir
-                                      'factor))
-                  t))
+      )
     :config
     (progn
       (require 'fuel-mode)
