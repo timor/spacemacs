@@ -2352,15 +2352,29 @@ depends on it."
     (unless (string-empty-p version-string)
       (version-to-list version-string))))
 
+(defun configuration-layer//package-delete-ignore-site (pkg-desc &optional force nosave)
+  "Call `package-delete', but preempt the check therein that
+  refuses to delete packages which are not installed inside the
+  user's package directory. Fixes errors when trying to uninstall
+  site-lisp packages."
+  (let ((dir (package-desc-dir pkg-desc))
+        (name (package-desc-full-name pkg-desc)))
+    (if (not (string-prefix-p (file-name-as-directory
+                            (expand-file-name package-user-dir))
+                           (expand-file-name dir)))
+        (spacemacs-buffer/message "Package '%s' installed site-wide, not deleting." name)
+      (package-delete p force nosave)))
+  )
+
 (defun configuration-layer//package-delete (pkg-name)
   "Delete package with name PKG-NAME."
   (cond
    ((version<= "25.0.50" emacs-version)
     (let ((p (cadr (assq pkg-name package-alist))))
       ;; add force flag to ignore dependency checks in Emacs25
-      (when p (package-delete p t t))))
+      (when p (configuration-layer//package-delete-ignore-site p t t))))
    (t (let ((p (cadr (assq pkg-name package-alist))))
-        (when p (package-delete p))))))
+        (when p (configuration-layer//package-delete-ignore-site p))))))
 
 (defun configuration-layer/delete-orphan-packages (packages)
   "Delete PACKAGES if they are orphan."
