@@ -17,13 +17,13 @@
 
 ;; paths
 (defvar spacemacs-start-directory
-  user-emacs-directory
+  (concat (file-name-directory (or load-file-name (buffer-file-name))) "../")
   "Spacemacs start directory.")
 (defconst spacemacs-core-directory
   (expand-file-name (concat spacemacs-start-directory "core/"))
   "Spacemacs core directory.")
 (defconst spacemacs-private-directory
-  (expand-file-name (concat spacemacs-start-directory "private/"))
+  (expand-file-name (concat user-emacs-directory "private/"))
   "Spacemacs private directory.")
 (defconst spacemacs-info-directory
   (expand-file-name (concat spacemacs-core-directory "info/"))
