@@ -336,6 +336,12 @@ file exists."
       (insert-file-contents-literally file)
       (buffer-substring-no-properties (point-min) (point-max)))))
 
+(defun quelpa--copy-dir-with-chmod (directory newname &rest args)
+  "Wrapper around `copy-directory', which changes the directory
+  to writable afterwards.  Only works on linux."
+  (apply 'copy-directory directory newname args)
+  (call-process "chmod" nil nil nil "-R" "+w" newname))
+
 (defun quelpa-check-hash (name config file-path dir &optional fetcher)
   "Check if hash of FILE-PATH is different as in STAMP-FILE.
 If it is different save the new hash and timestamp to STAMP-FILE
@@ -375,7 +381,7 @@ and return TIME-STAMP, otherwise return OLD-TIME-STAMP."
         (make-directory dir)
         (if (eq type 'file)
             (copy-file file-path dir t t t t)
-          (copy-directory file-path dir t t t)))
+          (quelpa--copy-dir-with-chmod file-path dir t t t)))
       (quelpa-build--dump new-stamp-info stamp-file)
       (quelpa-file-version file-path type version time-stamp))))
 
@@ -1372,7 +1378,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
     (copy-file file newname))
    ((file-directory-p file)
     (quelpa-build--message "%s => %s" file newname)
-    (copy-directory file newname))))
+    (quelpa--copy-dir-with-chmod file newname))))
 
 (defun quelpa-build--find-source-file (target files)
   "Search for source of TARGET in FILES."
