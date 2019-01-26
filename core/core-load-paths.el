@@ -34,7 +34,7 @@
 
 ;; ~/.emacs.d
 (defvar spacemacs-start-directory
-  (expand-file-name user-emacs-directory)
+  (concat (file-name-directory (or load-file-name (buffer-file-name))) "../")
   "Spacemacs start directory.")
 
 ;; ~/.emacs.d/assets
@@ -90,7 +90,7 @@
 
 ;; ~/.emacs.d/private
 (defconst spacemacs-private-directory
-  (concat spacemacs-start-directory "private/")
+  (concat user-emacs-directory "private/")
   "Spacemacs private directory.")
 
 ;; ~/.emacs.d/tests
