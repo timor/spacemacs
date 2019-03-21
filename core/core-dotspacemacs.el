@@ -494,7 +494,7 @@ the symbol of an editing style and the cdr is a list of keyword arguments like
 Returns non nil if the layer has been effectively inserted."
   (unless (configuration-layer/layer-used-p layer-name)
     (with-current-buffer (find-file-noselect (dotspacemacs/location))
-      (beginning-of-buffer)
+      (goto-char (point-min))
       (let ((insert-point (re-search-forward
                            "[^`]dotspacemacs-configuration-layers\\s-*\n?[^(]*\\((\\)")))
         (insert (format "%S" layer-name))

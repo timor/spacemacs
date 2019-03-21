@@ -2698,7 +2698,7 @@ ELPA stable repository."
           (with-current-buffer (find-file-noselect
                                 configuration-layer--stable-elpa-version-file)
             (erase-buffer)
-            (beginning-of-buffer)
+            (goto-char (point-min))
             (insert (format "%s" configuration-layer-stable-elpa-version))
             (save-buffer)))))))
 
