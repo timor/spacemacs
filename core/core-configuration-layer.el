@@ -535,7 +535,7 @@ refreshed during the current session."
                                 "\nError connection time out for %s repository!"
                                 aname) :warning)
                               'error))
-                         (condition-case err
+                         (condition-case nil
                              (url-retrieve-synchronously apath)
                            ('error
                             (display-warning
@@ -2624,22 +2624,23 @@ ELPA stable repository."
               "Cannot import keyring: %S" (cdr error))
              (setq untar nil)))
           (condition-case error
-              (setf (epg-context-home-directory context) homedir)
-            (epg-verify-string context sig-string (buffer-string))
-            (let (good-signatures)
-              ;; The .sig file may contain multiple signatures.  Success if one
-              ;; of the signatures is good.
-              (dolist (sig (epg-context-result-for context 'verify))
-                (when (eq (epg-signature-status sig) 'good)
-                  (push sig good-signatures)))
-              (when (null good-signatures)
-                (setq untar nil)
-                (configuration-layer//error
-                 (concat "Cannot verify %s archive! \n"
-                         "Installation of ELPA repository aborted.")
-                 archive)
-                (package--display-verify-error context sig-file)
-                (setq untar nil)))
+              (let (good-signatures)
+                ;; The .sig file may contain multiple signatures. Success if one
+                ;; of the signatures is good.
+                (setf (epg-context-home-directory context) homedir)
+                (epg-verify-string context sig-string (buffer-string))
+
+                (dolist (sig (epg-context-result-for context 'verify))
+                  (when (eq (epg-signature-status sig) 'good)
+                    (push sig good-signatures)))
+                (unless good-signatures
+                  (setq untar nil)
+                  (configuration-layer//error
+                   (concat "Cannot verify %s archive! \n"
+                           "Installation of ELPA repository aborted.")
+                   archive)
+                  (package--display-verify-error context sig-file)
+                  (setq untar nil)))
             (error
              (configuration-layer//error
               (concat "An error happened while trying to verify %s archive! "
