@@ -210,7 +210,7 @@ LAYER has to be installed for this method to work properly."
     (when (and (numberp rank)
                (not (eq 'unspecified shadow-candidates))
                (listp shadow-candidates))
-      (mapcar
+      (mapc
        (lambda (other)
          (let ((orank (cl-position other configuration-layer--used-layers)))
            ;; OTHER shadows LAYER if and only if OTHER's rank is bigger than
