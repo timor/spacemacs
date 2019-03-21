@@ -2846,12 +2846,13 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-insert-lazy-install-form ()
-  (cl-letf (((symbol-function 'insert) 'identity))
-    (should
-     (equal
-      (concat "(configuration-layer/lazy-install 'layer "
-              ":extensions '(\"\\\\(\\\\.ext\\\\'\\\\)\" mode))\n")
-      (configuration-layer//insert-lazy-install-form 'layer 'mode "\\(\\.ext\\'\\)")))))
+  (should
+   (equal
+    (concat "(configuration-layer/lazy-install 'layer "
+            ":extensions '(\"\\\\(\\\\.ext\\\\'\\\\)\" mode))\n")
+    (with-temp-buffer
+      (configuration-layer//insert-lazy-install-form 'layer 'mode "\\(\\.ext\\'\\)")
+      (buffer-string)))))
 
 ;; ---------------------------------------------------------------------------
 ;; configuration-layer/configured-packages-stats
