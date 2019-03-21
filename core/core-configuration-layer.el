@@ -650,7 +650,7 @@ To prevent package from being installed or uninstalled set the variable
                        (list layer))
                       (dolist (pkg pkgs)
                         (let ((pkg-name (if (listp pkg) (car pkg) pkg)))
-                          (add-to-list 'all-other-packages pkg-name))))))
+                          (cl-pushnew pkg-name all-other-packages 'test :equal))))))
                 (configuration-layer//filter-distant-packages
                  all-other-packages nil))))))
       (configuration-layer//install-packages packages)
@@ -1830,10 +1830,10 @@ RNAME is the name symbol of another existing layer."
                 (when deps (configuration-layer//filter-packages-with-deps
                             (mapcar 'car deps) filter))))
           (when install-deps
-            (setq result (append install-deps result))))
+            (setq result (append result install-deps))))
         (when (funcall filter pkg-name)
-          (add-to-list 'result pkg-name t)))
-      (delete-dups result))))
+          (push pkg-name result)))
+      (delete-dups (nreverse result)))))
 
 (defun configuration-layer//get-uninstalled-packages (pkg-names)
   "Return a filtered list of PKG-NAMES to install."
@@ -2247,7 +2247,7 @@ depends on it."
           (let* ((dep-sym (car dep))
                  (value (ht-get result dep-sym)))
             (puthash dep-sym
-                     (if value (add-to-list 'value pkg-sym) (list pkg-sym))
+                     (if value (cl-pushnew pkg-sym value :test 'equal) (list pkg-sym))
                      result)))))
     result))
 
@@ -2257,7 +2257,7 @@ depends on it."
     (dolist (pkg package-alist)
       (let ((pkg-sym (car pkg)))
         (unless (memq pkg-sym packages)
-          (add-to-list 'imp-pkgs pkg-sym))))
+          (cl-pushnew pkg-sym imp-pkgs :test 'equal))))
     imp-pkgs))
 
 (defun configuration-layer//get-orphan-packages
@@ -2267,7 +2267,7 @@ depends on it."
     (dolist (imp-pkg implicit-pkgs)
       (when (configuration-layer//is-package-orphan
              imp-pkg dist-pkgs dependencies)
-        (add-to-list 'result imp-pkg)))
+        (cl-pushnew imp-pkg result :test 'equal)))
     result))
 
 (defun configuration-layer//is-package-orphan (pkg-name dist-pkgs dependencies)
@@ -2471,7 +2471,7 @@ depends on it."
                                   (assq x package-archive-contents)))))
           (dolist (pkg (cons pkg-sym elpa-deps))
             ;; avoid duplicates
-            (add-to-list 'result pkg)))))
+            (cl-pushnew pkg result :test 'equal)))))
     result))
 
 (defun configuration-layer//create-archive-contents-item (pkg-name)
