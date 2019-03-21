@@ -846,16 +846,14 @@ error recovery."
     'dotspacemacs-highlight-delimiters "is one of \'all, \'any, \'current or nil")
    (spacemacs//test-list
     (lambda (x)
-      (let ((el (or (car-safe x) x))
-            (list-size (cdr-safe x)))
-      (member el '(recents bookmarks projects todos agenda))))
+      (let ((el (or (car-safe x) x)))
+        (member el '(recents bookmarks projects todos agenda))))
     'dotspacemacs-startup-lists (concat "includes \'recents, "
                               "\'bookmarks, \'todos, "
                               "\'agenda or \'projects"))
    (spacemacs//test-list
     (lambda (x)
-      (let ((el (or (car-safe x) x))
-            (list-size (cdr-safe x)))
+      (let ((list-size (cdr-safe x)))
         (or (null list-size)(numberp list-size))))
     'dotspacemacs-startup-lists (concat "list size is a number"))
    (spacemacs//test-var 'stringp 'dotspacemacs-leader-key "is a string")

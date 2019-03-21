@@ -200,6 +200,7 @@ LAYER has to be installed for this method to work properly."
 
 (defmethod cfgl-layer-owned-packages ((layer nil) &optional props)
   "Accept nil as argument and return nil."
+  layer props
   nil)
 
 (defmethod cfgl-layer-get-shadowing-layers ((layer cfgl-layer))
@@ -938,7 +939,7 @@ a new object."
   (purecopy (concat "mouse-2, RET: show a description of this package.")))
 
 (defun configuration-layer/describe-package (pkg-symbol
-                            &optional layer-list pkg-list)
+                            &optional layer-list)
   "Describe a package in the context of the configuration layer system."
   (interactive
    (list (intern
@@ -1399,8 +1400,7 @@ discovery."
                                                               "layers/"))))
                            (when (file-exists-p dir) (list dir))))
                        ;; additional layer directories provided by the user
-                       dotspacemacs-configuration-layer-path))
-        (discovered '()))
+                       dotspacemacs-configuration-layer-path)))
     ;; filter out directories that don't exist
     (setq search-paths (configuration-layer/filter-objects
                         search-paths
@@ -1806,7 +1806,6 @@ RNAME is the name symbol of another existing layer."
 (defun configuration-layer//install-from-recipe (pkg)
   "Install PKG from a recipe."
   (let* ((pkg-name (oref pkg name))
-         (layer (car (oref pkg owners)))
          (recipe (cons pkg-name (cdr (oref pkg location)))))
     (if recipe
         (quelpa recipe)
@@ -2487,6 +2486,8 @@ depends on it."
 (defun configuration-layer//patch-package-descriptor (desc)
   "Return a patched DESC.
 The URL of the descriptor is patched to be the passed URL"
+  desc
+  nil
   )
 
 (defun configuration-layer//download-elpa-file

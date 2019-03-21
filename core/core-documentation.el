@@ -55,7 +55,7 @@
         (insert (format "\n%s %s\n" level pretty-name))
         (spacemacs//generate-layers-from-path c (concat level "*"))))))
 
-(defun spacemacs//fetch-docs-from-root (project-plist)
+(defun spacemacs//fetch-docs-from-root ()
   "Add missing CONTRIBUTING and COMMUNITY files to doc folder for publishing.
    Have been moved out of the doc folder to let github show the documentation.
    See commit 315528c89fd351d559a262bb88bd15ed961e4b4e"
@@ -81,7 +81,7 @@ See `spacemacs//fetch-docs-from-root'"
       (f-move file-to-move
               (concat publish-target file-name)))))
 
-(defun spacemacs/generate-layers-file (project-plist)
+(defun spacemacs/generate-layers-file ()
   "Generate the layers list file."
   (interactive)
   (with-temp-buffer
