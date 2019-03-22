@@ -1677,15 +1677,7 @@ RNAME is the name symbol of another existing layer."
 
 (defun configuration-layer//install-package (pkg)
   "Unconditionally install the package PKG."
-  (let* ((layer (when pkg (car (oref pkg owners))))
-         (location (when pkg (oref pkg location)))
-         (min-version (when pkg (oref pkg min-version))))
-    (spacemacs-buffer/replace-last-line
-     (format "--> installing %s: %s%s... [%s/%s]"
-             (if layer "package" "dependency")
-             pkg-name (if layer (format "@%S" layer) "")
-             installed-count not-inst-count) t)
-    (spacemacs//redisplay)
+  (with-slots (location min-version (pkg-name name)) pkg
     (unless (package-installed-p pkg-name min-version)
       (condition-case-unless-debug err
           (cond
@@ -1702,6 +1694,21 @@ RNAME is the name symbol of another existing layer."
           (concat "\nAn error occurred while installing %s "
                   "(error: %s)\n") pkg-name err)
          (spacemacs//redisplay))))))
+
+(defun configuration-layer//install-package-with-display (pkg installed-count not-inst-count)
+  "Wrap call to `configuration-layer//install-package' in code
+  that reports progress in the spacemacs buffer."
+  (with-slots (owners (pkg-name name)) pkg
+    (let ((layer (car owners)))
+      (spacemacs-buffer/replace-last-line
+       (format "--> installing %s: %s%s... [%s/%s]"
+               (if layer "package" "dependency")
+               pkg-name
+               (if layer (format "@%S" layer) "")
+               installed-count not-inst-count) t)
+      (spacemacs//redisplay)
+      (configuration-layer//install-package pkg)
+      )))
 
 (defun configuration-layer//lazy-install-p (layer-name)
   "Return non nil if the layer with LAYER-NAME should be lazy installed."
@@ -1756,7 +1763,7 @@ RNAME is the name symbol of another existing layer."
     (configuration-layer//configure-quelpa)
     (let* ((upkg-names (configuration-layer//get-uninstalled-packages packages))
            (not-inst-count (length upkg-names))
-           installed-count)
+           (installed-count 0))
       ;; installation
       (when upkg-names
         (spacemacs-buffer/set-mode-line "Installing packages..." t)
@@ -1765,20 +1772,19 @@ RNAME is the name symbol of another existing layer."
            (format "Found %s new package(s) to install...\n"
                    not-inst-count))
           (configuration-layer/retrieve-package-archives)
-          (setq installed-count 0)
           (spacemacs//redisplay)
           ;; bootstrap and pre step packages first
           (dolist (pkg-name upkg-names)
             (let ((pkg (configuration-layer/get-package pkg-name)))
               (when (and pkg (memq (oref pkg step) '(bootstrap pre)))
-                (setq installed-count (1+ installed-count))
-                (configuration-layer//install-package pkg))))
+                (incf installed-count)
+                (configuration-layer//install-package-with-display pkg installed-count not-inst-count))))
           ;; then all other packages
           (dolist (pkg-name upkg-names)
             (let ((pkg (configuration-layer/get-package pkg-name)))
               (unless (and pkg (memq (oref pkg step) '(bootstrap pre)))
-                (setq installed-count (1+ installed-count))
-                (configuration-layer//install-package pkg))))
+                (incf installed-count)
+                (configuration-layer//install-package-with-display pkg installed-count not-inst-count))))
           (spacemacs-buffer/append "\n")
           (unless init-file-debug
             ;; get rid of all delayed warnings when byte-compiling packages
