@@ -1818,7 +1818,7 @@ RNAME is the name symbol of another existing layer."
       (configuration-layer//warning
        (concat "Cannot find any recipe for package %S! Be sure "
                "to add a recipe for it in alist %S.")
-       pkg-name recipes-var))))
+       pkg-name recipe))))
 
 (defun configuration-layer//filter-packages-with-deps
     (pkg-names filter &optional use-archive)
