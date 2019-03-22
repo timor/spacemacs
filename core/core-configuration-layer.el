@@ -636,7 +636,7 @@ To prevent package from being installed or uninstalled set the variable
             ;; install used packages
             (configuration-layer//filter-distant-packages
              configuration-layer--used-packages t
-             '(not (oref pkg lazy-install)))
+             (lambda(pkg) (not (oref pkg lazy-install))))
             ;; also install all other packages if requested
             (when (eq 'all dotspacemacs-install-packages)
               (let (all-other-packages)
@@ -1310,7 +1310,7 @@ PREDICATE is an additional expression that eval to a boolean."
                 (or (null usedp)
                     (cfgl-package-used-p pkg))
                 (or (null predicate)
-                    (eval predicate)))
+                    (funcall predicate pkg)))
          (spacemacs-buffer/warning "Cannot find package for %s" x)
          nil)))))
 
