@@ -35,7 +35,7 @@
 ;; method: cfgl-layer-owned-packages
 
 (ert-deftest test-cfgl-layer-owned-packages--owns-packages-without-props ()
-  (let ((layer1 (cfgl-layer "layer1"
+  (let ((layer1 (cfgl-layer
                             :name 'layer1
                             :packages '(pkg1
                                         (pkg2 :location foo)
@@ -44,15 +44,15 @@
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer2))
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer1))
-           (cfgl-package "pkg3" :name 'pkg3 :owners '(layer1))
-           (cfgl-package "pkg4" :name 'pkg4 :owners '(layer2))) t)
+     (list (cfgl-package :name 'pkg1 :owners '(layer2))
+           (cfgl-package :name 'pkg2 :owners '(layer1))
+           (cfgl-package :name 'pkg3 :owners '(layer1))
+           (cfgl-package :name 'pkg4 :owners '(layer2))) t)
     (should (equal '(pkg2 pkg3)
                    (cfgl-layer-owned-packages layer1)))))
 
 (ert-deftest test-cfgl-layer-owned-packages--owns-packages-with-props ()
-  (let ((layer1 (cfgl-layer "layer1"
+  (let ((layer1 (cfgl-layer
                             :name 'layer1
                             :packages '(pkg1
                                         (pkg2 :location foo)
@@ -62,11 +62,11 @@
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer1))
-           (cfgl-package "pkg3" :name 'pkg3 :owners '(layer1))
-           (cfgl-package "pkg4" :name 'pkg4 :owners '(layer2))
-           (cfgl-package "pkg5" :name 'pkg5 :owners '(layer2))) t)
+     (list (cfgl-package :name 'pkg1 :owners '(layer1))
+           (cfgl-package :name 'pkg2 :owners '(layer1))
+           (cfgl-package :name 'pkg3 :owners '(layer1))
+           (cfgl-package :name 'pkg4 :owners '(layer2))
+           (cfgl-package :name 'pkg5 :owners '(layer2))) t)
     (should (equal '(pkg1 (pkg2 :location foo)
                           (pkg3 :toggle (eq 1 2)))
                    (cfgl-layer-owned-packages layer1 'with-props)))))
@@ -80,7 +80,7 @@
 ;; method: cfgl-layer-get-packages
 
 (ert-deftest test-cfgl-layer-get-packages--all-packages-selected-default ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -89,7 +89,7 @@
                    (cfgl-layer-get-packages layer)))))
 
 (ert-deftest test-cfgl-layer-get-packages--all-packages-selected-default-with-props ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -98,7 +98,7 @@
                    (cfgl-layer-get-packages layer 'with-props)))))
 
 (ert-deftest test-cfgl-layer-get-packages--all-packages-selected-explicitly ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -108,7 +108,7 @@
                    (cfgl-layer-get-packages layer)))))
 
 (ert-deftest test-cfgl-layer-get-packages--all-packages-selected-explicitly-with-props ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -118,7 +118,7 @@
                    (cfgl-layer-get-packages layer 'with-props)))))
 
 (ert-deftest test-cfgl-layer-get-packages--selected-packages ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -128,7 +128,7 @@
                    (cfgl-layer-get-packages layer)))))
 
 (ert-deftest test-cfgl-layer-get-packages--selected-packages-with-props ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -138,7 +138,7 @@
                    (cfgl-layer-get-packages layer 'with-props)))))
 
 (ert-deftest test-cfgl-layer-get-packages--selected-packages-ignore-unknown ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -148,7 +148,7 @@
                    (cfgl-layer-get-packages layer)))))
 
 (ert-deftest test-cfgl-layer-get-packages--selected-packages-ignore-unknown-with-props ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '((pkg1 :location local)
                                        pkg2
@@ -158,13 +158,13 @@
                    (cfgl-layer-get-packages layer 'with-props)))))
 
 (ert-deftest test-cfgl-layer-get-packages--nil-packages-return-nil ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '())))
     (should (null (cfgl-layer-get-packages layer)))))
 
 (ert-deftest test-cfgl-layer-get-packages--nil-packages-with-unknown-selected-packages-return-nil ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :packages '()
                            :selected-packages '(pkg-unknown))))
@@ -173,8 +173,8 @@
 ;; method: cfgl-layer-get-shadowing-layers
 
 (ert-deftest test-cfgl-layer-get-shadowing-layers--l2-declared-after-l1-shadows-l1 ()
-  (let ((layer1 (cfgl-layer "layer1" :name 'layer1))
-        (layer2 (cfgl-layer "layer2" :name 'layer2))
+  (let ((layer1 (cfgl-layer :name 'layer1))
+        (layer2 (cfgl-layer :name 'layer2))
         (configuration-layer--used-layers nil)
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers `(,layer1 ,layer2) 'used)
@@ -183,8 +183,8 @@
                  (equal '() (cfgl-layer-get-shadowing-layers layer2))))))
 
 (ert-deftest test-cfgl-layer-get-shadowing-layers--l1-declared-after-l2-shadows-l2 ()
-  (let ((layer1 (cfgl-layer "layer1" :name 'layer1))
-        (layer2 (cfgl-layer "layer2" :name 'layer2))
+  (let ((layer1 (cfgl-layer :name 'layer1))
+        (layer2 (cfgl-layer :name 'layer2))
         (configuration-layer--used-layers nil)
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers `(,layer1 ,layer2) 'used)
@@ -193,8 +193,8 @@
                  (equal '() (cfgl-layer-get-shadowing-layers layer2))))))
 
 (ert-deftest test-cfgl-layer-get-shadowing-layers--prevent-l2-from-shadowing-l1 ()
-  (let ((layer1 (cfgl-layer "layer1" :name 'layer1))
-        (layer2 (cfgl-layer "layer2" :name 'layer2 :can-shadow nil))
+  (let ((layer1 (cfgl-layer :name 'layer1))
+        (layer2 (cfgl-layer :name 'layer2 :can-shadow nil))
         (configuration-layer--used-layers nil)
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers `(,layer1 ,layer2) 'used)
@@ -205,8 +205,8 @@
   ;; using the commutative property of the can-shadow relation
   ;; setting :can-shadow to nil on layer1 produces the same effect as the more
   ;; intuitive test-cfgl-layer-get-shadowing-layers--prevent-l2-from-shadowing-l1
-  (let ((layer1 (cfgl-layer "layer1" :name 'layer1 :can-shadow nil))
-        (layer2 (cfgl-layer "layer2" :name 'layer2))
+  (let ((layer1 (cfgl-layer :name 'layer1 :can-shadow nil))
+        (layer2 (cfgl-layer :name 'layer2))
         (configuration-layer--used-layers nil)
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers `(,layer1 ,layer2) 'used)
@@ -220,20 +220,20 @@
 (ert-deftest test-layer-used-p--returns-true-when-layer-is-used ()
   (let (configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
-    (helper--add-layers `(,(cfgl-layer "usedlayer" :name 'usedlayer)) 'used)
-    (helper--add-layers `(,(cfgl-layer "notusedlayer" :name 'notusedlayer)))
+    (helper--add-layers `(,(cfgl-layer :name 'usedlayer)) 'used)
+    (helper--add-layers `(,(cfgl-layer :name 'notusedlayer)))
     (should (configuration-layer/layer-used-p 'usedlayer))))
 
 (ert-deftest test-layer-used-p--returns-false-when-layer-is-not-used ()
   (let (configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
-    (helper--add-layers `(,(cfgl-layer "usedlayer" :name 'usedlayer)) 'used)
-    (helper--add-layers `(,(cfgl-layer "notusedlayer" :name 'notusedlayer)))
+    (helper--add-layers `(,(cfgl-layer :name 'usedlayer)) 'used)
+    (helper--add-layers `(,(cfgl-layer :name 'notusedlayer)))
     (should (null (configuration-layer/layer-used-p 'notusedlayer)))))
 
 (ert-deftest test-layer-used-p--returns-false-when-layer-is-shadowed ()
-  (let ((usedlayer1 (cfgl-layer "usedlayer1" :name 'usedlayer1))
-        (usedlayer2 (cfgl-layer "usedlayer2" :name 'usedlayer2))
+  (let ((usedlayer1 (cfgl-layer :name 'usedlayer1))
+        (usedlayer2 (cfgl-layer :name 'usedlayer2))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers `(,usedlayer1 ,usedlayer2) 'used)
@@ -250,28 +250,28 @@
 ;; method: cfgl-package-enabled-p
 
 (ert-deftest test-cfgl-package-enabled-p--default-toggle-eval-non-nil ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg)))
+  (let ((pkg (cfgl-package :name 'testpkg)))
     (should (cfgl-package-enabled-p pkg))))
 
 (ert-deftest test-cfgl-package-enabled-p--symbol-toggle-eval-non-nil-example ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg :toggle 'package-toggle))
+  (let ((pkg (cfgl-package :name 'testpkg :toggle 'package-toggle))
         (package-toggle t))
     (should (cfgl-package-enabled-p pkg))))
 
 (ert-deftest test-cfgl-package-enabled-p--symbol-toggle-eval-nil-example ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg :toggle 'package-toggle))
+  (let ((pkg (cfgl-package :name 'testpkg :toggle 'package-toggle))
         (package-toggle nil))
     (should (null (cfgl-package-enabled-p pkg)))))
 
 (ert-deftest test-cfgl-package-enabled-p--list-toggle-eval-non-nil-example ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :toggle '(memq package-toggle '(foo bar))))
         (package-toggle 'foo))
     (should (cfgl-package-enabled-p pkg))))
 
 (ert-deftest test-cfgl-package-enabled-p--list-toggle-eval-nil-example ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :toggle '(memq package-toggle '(foo bar))))
         (package-toggle 'other))
@@ -348,95 +348,95 @@
 ;; method: cfgl-package-get-safe-owner
 
 (ert-deftest test-cfgl-package-get-safe-owner--return-car ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg :owners '(layer1 layer2)))
+  (let ((pkg (cfgl-package :name 'testpkg :owners '(layer1 layer2)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)
-                          ,(cfgl-layer "layer2" :name 'layer2)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)
+                          ,(cfgl-layer :name 'layer2)) t)
     (should (eq 'layer1 (cfgl-package-get-safe-owner pkg)))))
 
 (ert-deftest test-cfgl-package-get-safe-owner--return-cadr ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg :owners '(layer1 layer2)))
+  (let ((pkg (cfgl-package :name 'testpkg :owners '(layer1 layer2)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     ;; layer1 is not used so it cannot be the owner
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)))
-    (helper--add-layers `(,(cfgl-layer "layer2" :name 'layer2)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)))
+    (helper--add-layers `(,(cfgl-layer :name 'layer2)) t)
     (should (eq 'layer2 (cfgl-package-get-safe-owner pkg)))))
 
 ;; method: cfgl-package-distant-p
 
 (ert-deftest test-cfgl-package-distant-p--by-default-is-distant ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1))))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (cfgl-package-distant-p pkg))))
 
 (ert-deftest test-cfgl-package-distant-p--from-elpa-repo-is-distant ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1)
                            :location 'elpa)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (cfgl-package-distant-p pkg))))
 
 (ert-deftest test-cfgl-package-distant-p--from-recipe-is-distant ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1)
                            :location '(recipe blahblah))))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (cfgl-package-distant-p pkg))))
 
 (ert-deftest test-cfgl-package-distant-p--built-in-is-not-distant ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1)
                            :location 'built-in)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (not (cfgl-package-distant-p pkg)))))
 
 (ert-deftest test-cfgl-package-distant-p--site-is-not-distant ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1)
                            :location 'site)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (not (cfgl-package-distant-p pkg)))))
 
 (ert-deftest test-cfgl-package-distant-p--local-is-not-distant ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1)
                            :location 'local)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (not (cfgl-package-distant-p pkg)))))
 
 (ert-deftest test-cfgl-package-distant-p--location-is-a-path ()
-  (let ((pkg (cfgl-package "testpkg"
+  (let ((pkg (cfgl-package
                            :name 'testpkg
                            :owners '(layer1)
                            :location "/a/path/to/pkg")))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (not (cfgl-package-distant-p pkg)))))
 
 ;; method: cfgl-package-used-p
 
 (ert-deftest test-cfgl-package-used-p--if-owned-by-layer-pkg-is-used ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg :owners '(layer1))))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+  (let ((pkg (cfgl-package :name 'testpkg :owners '(layer1))))
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (cfgl-package-used-p pkg))))
 
 (ert-deftest test-cfgl-package-used-p--if-no-owner-pkg-is-not-used ()
-  (let ((pkg (cfgl-package "testpkg" :name 'testpkg)))
+  (let ((pkg (cfgl-package :name 'testpkg)))
     (should (not (cfgl-package-used-p pkg)))))
 
 (ert-deftest test-cfgl-package-used-p--if-excluded-pkg-is-not-used ()
-  (let ((pkg (cfgl-package "testpkg" :name
+  (let ((pkg (cfgl-package :name
                            'testpkg :owners '(layer1)
                            :excluded t)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (should (not (cfgl-package-used-p pkg)))))
 
 ;; ---------------------------------------------------------------------------
@@ -444,9 +444,9 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-package-enabled-p--pre ()
-  (let ((owner (cfgl-layer "owner" :name 'owner))
-        (layer (cfgl-layer "layer" :name 'layer))
-        (pkg (cfgl-package "pkg"
+  (let ((owner (cfgl-layer :name 'owner))
+        (layer (cfgl-layer :name 'layer))
+        (pkg (cfgl-package
                            :name 'pkg
                            :owners '(owner)
                            :pre-layers '(layer)))
@@ -458,9 +458,9 @@
     (should (configuration-layer//package-enabled-p pkg 'layer))))
 
 (ert-deftest test-package-enabled-p--post ()
-  (let ((owner (cfgl-layer "owner" :name 'owner))
-        (layer (cfgl-layer "layer" :name 'layer))
-        (pkg (cfgl-package "pkg"
+  (let ((owner (cfgl-layer :name 'owner))
+        (layer (cfgl-layer :name 'layer))
+        (pkg (cfgl-package
                            :name 'pkg
                            :owners '(owner)
                            :post-layers '(layer)))
@@ -471,9 +471,9 @@
     (should (configuration-layer//package-enabled-p pkg 'layer))))
 
 (ert-deftest test-package-enabled-p--disabled ()
-  (let ((owner (cfgl-layer "owner" :name 'owner :disabled-for '(layer)))
-        (layer (cfgl-layer "layer" :name 'layer))
-        (pkg (cfgl-package "pkg"
+  (let ((owner (cfgl-layer :name 'owner :disabled-for '(layer)))
+        (layer (cfgl-layer :name 'layer))
+        (pkg (cfgl-package
                            :name 'pkg
                            :owners '(owner)
                            :post-layers '(layer)))
@@ -484,9 +484,9 @@
     (should (null (configuration-layer//package-enabled-p pkg 'layer)))))
 
 (ert-deftest test-package-enabled-p--enabled-precedence ()
-  (let ((owner (cfgl-layer "owner" :name 'owner :disabled-for '(layer) :enabled-for '(layer)))
-        (layer (cfgl-layer "layer" :name 'layer))
-        (pkg (cfgl-package "pkg"
+  (let ((owner (cfgl-layer :name 'owner :disabled-for '(layer) :enabled-for '(layer)))
+        (layer (cfgl-layer :name 'layer))
+        (pkg (cfgl-package
                            :name 'pkg
                            :owners '(owner)
                            :post-layers '(layer)))
@@ -497,9 +497,9 @@
     (should (configuration-layer//package-enabled-p pkg 'layer))))
 
 (ert-deftest test-package-enabled-p--enabled-for-none ()
-  (let ((owner (cfgl-layer "owner" :name 'owner :enabled-for '()))
-        (layer (cfgl-layer "layer" :name 'layer))
-        (pkg (cfgl-package "pkg"
+  (let ((owner (cfgl-layer :name 'owner :enabled-for '()))
+        (layer (cfgl-layer :name 'layer))
+        (pkg (cfgl-package
                            :name 'pkg
                            :owners '(owner)
                            :post-layers '(layer)))
@@ -512,7 +512,7 @@
 (ert-deftest test-package-enabled-p--depends-on-disabled ()
   (let ((owner-a (cfgl-layer "owner-a" :name 'owner-a))
         (owner-b (cfgl-layer "owner-b" :name 'owner-b :disabled-for '(layer)))
-        (layer (cfgl-layer "layer" :name 'layer))
+        (layer (cfgl-layer :name 'layer))
         (pkg-a (cfgl-package "pkg-a"
                              :name 'pkg-a
                              :owners '(owner-a)
@@ -530,8 +530,8 @@
     (should (null (configuration-layer//package-enabled-p pkg-a 'layer)))))
 
 (ert-deftest test-package-enabled-p--depends-on-non-owned ()
-  (let ((layer (cfgl-layer "layer" :name 'layer))
-        (owner (cfgl-layer "owner" :name 'owner))
+  (let ((layer (cfgl-layer :name 'layer))
+        (owner (cfgl-layer :name 'owner))
         (pkg-a (cfgl-package "pkg-a"
                              :name 'pkg-a
                              :owners '(owner)
@@ -549,7 +549,7 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-package-usedp--package-with-owner-can-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layer1-packages '(pkg1 pkg2 pkg3))
          configuration-layer--used-layers
          configuration-layer--used-packages
@@ -557,26 +557,26 @@
          (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-layers (list layer1) t)
     (helper--add-packages
-     (list (cfgl-package "pkg3" :name 'pkg3 :owners '(layer1))
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer1))
-           (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))) t)
+     (list (cfgl-package :name 'pkg3 :owners '(layer1))
+           (cfgl-package :name 'pkg2 :owners '(layer1))
+           (cfgl-package :name 'pkg1 :owners '(layer1))) t)
     (should (configuration-layer/package-used-p
              (nth (random 3) layer1-packages)))))
 
 (ert-deftest test-package-usedp--package-with-no-owner-cannot-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layers (list layer1))
          (layer1-packages '(pkg1 pkg2 pkg3))
          configuration-layer--used-layers
          (configuration-layer--used-packages
-          (list (cfgl-package "pkg3" :name 'pkg3)
-                (cfgl-package "pkg2" :name 'pkg2)
-                (cfgl-package "pkg1" :name 'pkg1))))
+          (list (cfgl-package :name 'pkg3)
+                (cfgl-package :name 'pkg2)
+                (cfgl-package :name 'pkg1))))
     (should (null (configuration-layer/package-used-p
                    (nth (random 3) layer1-packages))))))
 
 (ert-deftest test-package-usedp--excluded-package-cannot-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layer1-packages '(pkg1 pkg2 pkg3))
          configuration-layer--used-layers
          configuration-layer--used-packages
@@ -585,16 +585,16 @@
          (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-layers (list layer1) t)
     (helper--add-packages
-     (list (cfgl-package "pkg3" :name 'pkg3 :owners '(layer1) :excluded t)
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer1) :excluded t)
-           (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1) :excluded t)) t)
+     (list (cfgl-package :name 'pkg3 :owners '(layer1) :excluded t)
+           (cfgl-package :name 'pkg2 :owners '(layer1) :excluded t)
+           (cfgl-package :name 'pkg1 :owners '(layer1) :excluded t)) t)
     (should (null (configuration-layer/package-used-p
                    (nth (random 3) layer1-packages))))))
 
 (ert-deftest test-package-usedp--used-pkg-depends-on-used-pkg-can-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layer1-packages '(pkg1))
-         (layer2 (cfgl-layer "layer2" :name 'layer2 :dir "/path/"))
+         (layer2 (cfgl-layer :name 'layer2 :dir "/path/"))
          (layer2-packages '(pkg2))
          configuration-layer--used-layers
          configuration-layer--used-packages
@@ -602,17 +602,17 @@
          (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-layers (list layer1 layer2) 'used)
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer2) :requires '(pkg1)))
+     (list (cfgl-package :name 'pkg1 :owners '(layer1))
+           (cfgl-package :name 'pkg2 :owners '(layer2) :requires '(pkg1)))
      'used)
     (should (configuration-layer/package-used-p 'pkg2))))
 
 (ert-deftest test-package-usedp--used-pkg3-depends-on-used-pkg2-depends-on-used-pkg1-can-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layer1-packages '(pkg1))
-         (layer2 (cfgl-layer "layer2" :name 'layer2 :dir "/path/"))
+         (layer2 (cfgl-layer :name 'layer2 :dir "/path/"))
          (layer2-packages '(pkg2))
-         (layer3 (cfgl-layer "layer3" :name 'layer3 :dir "/path/"))
+         (layer3 (cfgl-layer :name 'layer3 :dir "/path/"))
          (layer3-packages '(pkg3))
          configuration-layer--used-layers
          configuration-layer--used-packages
@@ -620,17 +620,17 @@
          (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-layers (list layer1 layer2 layer3) 'used)
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer2) :requires '(pkg1))
-           (cfgl-package "pkg3" :name 'pkg3 :owners '(layer3) :requires '(pkg2))
+     (list (cfgl-package :name 'pkg1 :owners '(layer1))
+           (cfgl-package :name 'pkg2 :owners '(layer2) :requires '(pkg1))
+           (cfgl-package :name 'pkg3 :owners '(layer3) :requires '(pkg2))
            )
      'used)
     (should (configuration-layer/package-used-p 'pkg3))))
 
 (ert-deftest test-package-usedp--used-pkg2-depends-on-unused-pkg1-cannot-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layer1-packages '(pkg1))
-         (layer2 (cfgl-layer "layer2" :name 'layer2 :dir "/path/"))
+         (layer2 (cfgl-layer :name 'layer2 :dir "/path/"))
          (layer2-packages '(pkg2))
          configuration-layer--used-layers
          configuration-layer--used-packages
@@ -639,18 +639,18 @@
     (helper--add-layers (list layer1))
     (helper--add-layers (list layer2) 'used)
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))))
+     (list (cfgl-package :name 'pkg1 :owners '(layer1))))
     (helper--add-packages
-     (list (cfgl-package "pkg2" :name 'pkg2 :owners '(layer2) :requires '(pkg1)))
+     (list (cfgl-package :name 'pkg2 :owners '(layer2) :requires '(pkg1)))
      'used)
     (should (null (configuration-layer/package-used-p 'pkg2)))))
 
 (ert-deftest test-package-usedp--used-pkg3-depends-on-used-pkg2-depends-on-unused-pkg1-cannot-be-used ()
-  (let* ((layer1 (cfgl-layer "layer1" :name 'layer1 :dir "/path/"))
+  (let* ((layer1 (cfgl-layer :name 'layer1 :dir "/path/"))
          (layer1-packages '(pkg1))
-         (layer2 (cfgl-layer "layer2" :name 'layer2 :dir "/path/"))
+         (layer2 (cfgl-layer :name 'layer2 :dir "/path/"))
          (layer2-packages '(pkg2))
-         (layer3 (cfgl-layer "layer3" :name 'layer3 :dir "/path/"))
+         (layer3 (cfgl-layer :name 'layer3 :dir "/path/"))
          (layer3-packages '(pkg3))
          configuration-layer--used-layers
          configuration-layer--used-packages
@@ -659,10 +659,10 @@
     (helper--add-layers (list layer1))
     (helper--add-layers (list layer2 layer3) 'used)
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))))
+     (list (cfgl-package :name 'pkg1 :owners '(layer1))))
     (helper--add-packages
-     (list (cfgl-package "pkg2" :name 'pkg2 :owners '(layer2) :requires '(pkg1))
-           (cfgl-package "pkg3" :name 'pkg3 :owners '(layer3) :requires '(pkg2)))
+     (list (cfgl-package :name 'pkg2 :owners '(layer2) :requires '(pkg1))
+           (cfgl-package :name 'pkg3 :owners '(layer3) :requires '(pkg2)))
      'used)
     (should (null (configuration-layer/package-used-p 'pkg3)))))
 
@@ -682,7 +682,7 @@
         (pkg-b (cfgl-package "pkg-b"
                              :name 'pkg-b
                              :owners '(owner)))
-        (owner (cfgl-layer "owner" :name 'owner))
+        (owner (cfgl-layer :name 'owner))
         configuration-layer--used-layers
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
@@ -697,7 +697,7 @@
                              :owners '(owner)))
         (pkg-b (cfgl-package "pkg-b"
                              :name 'pkg-b))
-        (owner (cfgl-layer "owner" :name 'owner))
+        (owner (cfgl-layer :name 'owner))
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (configuration-layer//add-package pkg-b)
@@ -878,14 +878,14 @@
 ;; layer directory
 
 (ert-deftest test-make-layer--make-layer-from-symbol-with-a-dir ()
-  (should (equal (cfgl-layer "layer"
+  (should (equal (cfgl-layer
                              :name 'layer
                              :dir spacemacs-start-directory)
                  (configuration-layer/make-layer
                   'layer nil nil spacemacs-start-directory))))
 
 (ert-deftest test-make-layer--make-layer-from-spec-with-a-dir ()
-  (should (equal (cfgl-layer "layer"
+  (should (equal (cfgl-layer
                              :name 'layer
                              :dir spacemacs-start-directory)
                  (configuration-layer/make-layer
@@ -906,10 +906,10 @@
    (should (null (configuration-layer/make-layer 'layer nil nil "/a/dir/")))))
 
 (ert-deftest test-make-layer--make-layer-without-a-dir-requires-an-initial-obj ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :dir spacemacs-start-directory)))
-    (should (equal (cfgl-layer "layer"
+    (should (equal (cfgl-layer
                                :name 'layer
                                :dir spacemacs-start-directory)
                    (configuration-layer/make-layer 'layer layer)))))
@@ -917,7 +917,7 @@
 ;; load packages
 
 (ert-deftest test-make-layer--make-used-layer-loads-packages-file ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :dir spacemacs-start-directory))
         (layer-packages '(pkg1 pkg2 pkg3))
@@ -925,7 +925,7 @@
     (mocker-let
      ((file-exists-p (f) ((:output t :occur 2)))
       (load (f &optional noerr nomsg) ((:output nil :occur 1))))
-     (should (equal (cfgl-layer "layer"
+     (should (equal (cfgl-layer
                                 :name 'layer
                                 :disabled-for nil
                                 :variables nil
@@ -935,7 +935,7 @@
               (configuration-layer/make-layer 'layer layer 'used))))))
 
 (ert-deftest test-make-layer--make-layer-force-load-packages-file-with-var ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :dir spacemacs-start-directory))
         (layer-packages '(pkg1 pkg2 pkg3))
@@ -944,7 +944,7 @@
     (mocker-let
      ((file-exists-p (f) ((:output t :occur 2)))
       (load (f &optional noerr nomsg) ((:output nil :occur 1))))
-     (should (equal (cfgl-layer "layer"
+     (should (equal (cfgl-layer
                                 :name 'layer
                                 :disabled-for nil
                                 :variables nil
@@ -954,7 +954,7 @@
                     (configuration-layer/make-layer 'layer layer))))))
 
 (ert-deftest test-make-layer--make-layer-does-not-load-packages-file-by-default ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :dir spacemacs-start-directory))
         (layer-packages '(pkg1))
@@ -966,7 +966,7 @@
 ;; set/override properties
 
 (ert-deftest test-make-layer--make-used-layer-can-set-additional-properties ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :dir spacemacs-start-directory))
         (layer-specs '(layer :disabled-for pkg8 pkg9
@@ -977,7 +977,7 @@
     (mocker-let
      ((file-exists-p (f) ((:output t :occur 2)))
       (load (f &optional noerr nomsg) ((:output nil :occur 1))))
-     (should (equal (cfgl-layer "layer"
+     (should (equal (cfgl-layer
                                 :name 'layer
                                 :disabled-for '(pkg8 pkg9)
                                 :can-shadow '(layer2 layer3)
@@ -988,14 +988,14 @@
                     (configuration-layer/make-layer layer-specs layer 'used))))))
 
 (ert-deftest test-make-layer--make-not-used-layer-cannot-set-additional-properties ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :dir spacemacs-start-directory))
         (layer-specs '(layer :disabled-for pkg8 pkg9
                              :can-shadow layer2
                              :variables foo bar toto 1))
         (layer-packages '(pkg1 pkg2 pkg3)))
-    (should (equal (cfgl-layer "layer"
+    (should (equal (cfgl-layer
                                :name 'layer
                                :disabled-for nil
                                :can-shadow 'unspecified
@@ -1006,7 +1006,7 @@
                    (configuration-layer/make-layer layer-specs layer)))))
 
 (ert-deftest test-make-layer--make-used-layer-can-override-additional-properties ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :disabled-for '(pkg10)
                            :can-shadow '()
@@ -1020,7 +1020,7 @@
     (mocker-let
      ((file-exists-p (f) ((:output t :occur 2)))
       (load (f &optional noerr nomsg) ((:output nil :occur 1))))
-     (should (equal (cfgl-layer "layer"
+     (should (equal (cfgl-layer
                                 :name 'layer
                                 :disabled-for '(pkg8 pkg9)
                                 :can-shadow '(layer2)
@@ -1031,7 +1031,7 @@
                     (configuration-layer/make-layer layer-specs layer 'used))))))
 
 (ert-deftest test-make-layer--make-not-used-layer-cannot-override-additional-properties ()
-  (let ((layer (cfgl-layer "layer"
+  (let ((layer (cfgl-layer
                            :name 'layer
                            :disabled-for '(pkg10)
                            :can-shadow '()
@@ -1043,7 +1043,7 @@
                              :can-shadow '(layer2)
                              :variables foo bar toto 1))
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (should (equal (cfgl-layer "layer"
+    (should (equal (cfgl-layer
                                :name 'layer
                                :disabled-for '(pkg10)
                                :can-shadow '()
@@ -1068,10 +1068,10 @@
     (should (and
              (equal '(layer-shadow-1) (oref (configuration-layer/get-layer
                                              'layer-shadow-2)
-                                            :can-shadow))
+                                            can-shadow))
              (equal '(layer-shadow-2) (oref (configuration-layer/get-layer
                                              'layer-shadow-1)
-                                            :can-shadow))))))
+                                            can-shadow))))))
 
 (ert-deftest test-declare-shadow-relation--is-idempotent ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
@@ -1088,10 +1088,10 @@
        'layer-shadow-1))
     (should (and (equal '(layer-shadow-1)
                         (oref (configuration-layer/get-layer 'layer-shadow-2)
-                              :can-shadow))
+                              can-shadow))
                  (equal '(layer-shadow-2)
                         (oref (configuration-layer/get-layer 'layer-shadow-1)
-                              :can-shadow))))))
+                              can-shadow))))))
 
 (ert-deftest test-declare-shadow-relation--layer-1-shadows-multiple-layers ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
@@ -1105,13 +1105,13 @@
      'layer-shadow-3)
     (should (equal '(layer-shadow-1)
                    (oref (configuration-layer/get-layer 'layer-shadow-2)
-                         :can-shadow)))
+                         can-shadow)))
     (should (equal '(layer-shadow-1)
                    (oref (configuration-layer/get-layer 'layer-shadow-3)
-                         :can-shadow)))
+                         can-shadow)))
     (should (equal '(layer-shadow-3 layer-shadow-2)
                    (oref (configuration-layer/get-layer 'layer-shadow-1)
-                         :can-shadow)))))
+                         can-shadow)))))
 
 (ert-deftest test-declare-shadow-relation--unknown-layer-shadows-known-layer ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
@@ -1126,7 +1126,7 @@
       'layer-shadow-2)
      (should (eq 'unspecified
                  (oref (configuration-layer/get-layer 'layer-shadow-2)
-                       :can-shadow))))))
+                       can-shadow))))))
 
 (ert-deftest test-declare-shadow-relation--known-layer-shadows-unknown-layer ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
@@ -1154,7 +1154,7 @@
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024))
         (var 'foo))
     (helper--add-layers
-     `(,(cfgl-layer "layer"
+     `(,(cfgl-layer
                     :name 'layer
                     :dir "/a/path/")))
     (configuration-layer//set-layers-variables '(layer))
@@ -1163,7 +1163,7 @@
 (ert-deftest test-set-layers-variables--one-value ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers
-     `(,(cfgl-layer "layer"
+     `(,(cfgl-layer
                     :name 'layer
                     :dir "/a/path/"
                     :variables '(var1 'bar))))
@@ -1174,22 +1174,22 @@
 (ert-deftest test-set-layers-variables--multiple-values ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers
-     `(,(cfgl-layer "layer"
+     `(,(cfgl-layer
                     :name 'layer
                     :dir "/a/path/"
                     :variables '(var1 'bar1 var2 'bar2 var3 'bar3))))
-    (setq var1 'foo)
-    (setq var2 'foo)
-    (setq var3 'foo)
-    (configuration-layer//set-layers-variables '(layer))
-    (should (eq var1 'bar1))
-    (should (eq var2 'bar2))
-    (should (eq var3 'bar3))))
+    (let ((var1 'foo)
+          (var2 'foo)
+          (var3 'foo))
+      (configuration-layer//set-layers-variables '(layer))
+      (should (eq var1 'bar1))
+      (should (eq var2 'bar2))
+      (should (eq var3 'bar3)))))
 
 (ert-deftest test-set-layers-variables--odd-number-of-values ()
   (let ((configuration-layer--indexed-layers (make-hash-table :size 1024)))
     (helper--add-layers
-     `(,(cfgl-layer "layer"
+     `(,(cfgl-layer
                     :name 'layer
                     :dir "/a/path/"
                     :variables '(var1 'bar var2))))
@@ -1197,11 +1197,11 @@
      ((configuration-layer//warning
        (msg &rest args)
        ((:record-cls 'mocker-stub-record :output nil :occur 1))))
-     (setq var1 'foo)
-     (setq var2 'foo)
-     (configuration-layer//set-layers-variables '(layer))
-     (should (eq var1 'bar))
-     (should (eq var2 'foo)))))
+     (let ((var1 'foo)
+           (var2 'foo))
+       (configuration-layer//set-layers-variables '(layer))
+       (should (eq var1 'bar))
+       (should (eq var2 'foo))))))
 
 ;; ---------------------------------------------------------------------------
 ;; configuration-layer/make-package
@@ -1211,7 +1211,7 @@
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
          (input 'testpkg)
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :location 'elpa
                                  :owners '(layer-make-pkg-1)
@@ -1231,7 +1231,7 @@
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
          (input '(testpkg :location local :step pre))
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :owners '(layer-make-pkg-2)
                                  :location 'local
@@ -1255,7 +1255,7 @@
          configuration-layer--protected-packages
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
          (input '(testpkg :protected t))
-         (expected-pkg (cfgl-package "testpkg"
+         (expected-pkg (cfgl-package
                                      :name 'testpkg
                                      :location 'elpa
                                      :owners '(layer-make-pkg-3)
@@ -1281,9 +1281,9 @@
 (ert-deftest test-make-package--can-override-toggle ()
   (let (configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
-        (obj (cfgl-package "testpkg" :name 'testpkg :toggle 'foo))
+        (obj (cfgl-package :name 'testpkg :toggle 'foo))
         (pkg '(testpkg :toggle bar))
-        (expected (cfgl-package "testpkg"
+        (expected (cfgl-package
                                 :name 'testpkg
                                 :owners '(layer-make-pkg-6)
                                 :toggle 'bar)))
@@ -1299,11 +1299,11 @@
 (ert-deftest test-make-package--can-override-location ()
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
-         (obj (cfgl-package "testpkg"
+         (obj (cfgl-package
                             :name 'testpkg
                             :location 'elpa))
          (pkg '(testpkg :location local))
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :owners '(layer-make-pkg-7)
                                  :location 'local)))
@@ -1317,11 +1317,11 @@
 (ert-deftest test-make-package--can-override-step ()
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
-         (obj (cfgl-package "testpkg"
+         (obj (cfgl-package
                             :name 'testpkg
                             :step nil))
          (pkg '(testpkg :step pre))
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :owners '(layer-make-pkg-8)
                                  :step 'pre)))
@@ -1336,11 +1336,11 @@
 (ert-deftest test-make-package--cannot-override-protected ()
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
-         (obj (cfgl-package "testpkg"
+         (obj (cfgl-package
                             :name 'testpkg
                             :protected t))
          (pkg '(testpkg :protected nil))
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :owners '(layer-make-pkg-9)
                                  :protected t)))
@@ -1356,11 +1356,11 @@
 (ert-deftest test-make-package--cannot-unexclude-excluded-package ()
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
-         (obj (cfgl-package "testpkg"
+         (obj (cfgl-package
                             :name 'testpkg
                             :excluded t))
          (pkg '(testpkg :excluded nil))
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :excluded t)))
     (helper--add-layers
@@ -1373,7 +1373,7 @@
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
          (pkg '(testpkg :step bootstrap))
-         (expected (cfgl-package "testpkg"
+         (expected (cfgl-package
                                  :name 'testpkg
                                  :owners '(layer-make-pkg-11)
                                  :step 'bootstrap
@@ -1391,24 +1391,24 @@
 ;; ---------------------------------------------------------------------------
 
 (defvar test-filter-distant-packages--test-data
-  `(,(cfgl-package "pkg18" :name 'pkg18 :owners nil)
-    ,(cfgl-package "pkg17" :name 'pkg17 :owners nil :location 'elpa)
-    ,(cfgl-package "pkg16" :name 'pkg16 :owners nil :toggle nil)
-    ,(cfgl-package "pkg15" :name 'pkg15 :owners nil :toggle t)
-    ,(cfgl-package "pkg14" :name 'pkg14 :owners nil :location '(recipe))
-    ,(cfgl-package "pkg13" :name 'pkg13 :owners nil :location 'built-in)
-    ,(cfgl-package "pkg12" :name 'pkg12 :owners nil :location 'local)
-    ,(cfgl-package "pkg11" :name 'pkg11 :owners nil :location 'site)
-    ,(cfgl-package "pkg10" :name 'pkg10 :owners nil :location "/path")
-    ,(cfgl-package "pkg9" :name 'pkg9 :owners '(layer))
-    ,(cfgl-package "pkg8" :name 'pkg8 :owners '(layer) :location 'elpa)
-    ,(cfgl-package "pkg7" :name 'pkg7 :owners '(layer) :toggle nil)
-    ,(cfgl-package "pkg6" :name 'pkg6 :owners '(layer) :toggle t)
-    ,(cfgl-package "pkg5" :name 'pkg5 :owners '(layer) :location '(recipe))
-    ,(cfgl-package "pkg4" :name 'pkg4 :owners '(layer) :location 'built-in)
-    ,(cfgl-package "pkg3" :name 'pkg3 :owners '(layer) :location 'local)
-    ,(cfgl-package "pkg2" :name 'pkg2 :owners '(layer) :location 'site)
-    ,(cfgl-package "pkg1" :name 'pkg1 :owners '(layer) :location "/path")))
+  `(,(cfgl-package :name 'pkg18 :owners nil)
+    ,(cfgl-package :name 'pkg17 :owners nil :location 'elpa)
+    ,(cfgl-package :name 'pkg16 :owners nil :toggle nil)
+    ,(cfgl-package :name 'pkg15 :owners nil :toggle t)
+    ,(cfgl-package :name 'pkg14 :owners nil :location '(recipe))
+    ,(cfgl-package :name 'pkg13 :owners nil :location 'built-in)
+    ,(cfgl-package :name 'pkg12 :owners nil :location 'local)
+    ,(cfgl-package :name 'pkg11 :owners nil :location 'site)
+    ,(cfgl-package :name 'pkg10 :owners nil :location "/path")
+    ,(cfgl-package :name 'pkg9 :owners '(layer))
+    ,(cfgl-package :name 'pkg8 :owners '(layer) :location 'elpa)
+    ,(cfgl-package :name 'pkg7 :owners '(layer) :toggle nil)
+    ,(cfgl-package :name 'pkg6 :owners '(layer) :toggle t)
+    ,(cfgl-package :name 'pkg5 :owners '(layer) :location '(recipe))
+    ,(cfgl-package :name 'pkg4 :owners '(layer) :location 'built-in)
+    ,(cfgl-package :name 'pkg3 :owners '(layer) :location 'local)
+    ,(cfgl-package :name 'pkg2 :owners '(layer) :location 'site)
+    ,(cfgl-package :name 'pkg1 :owners '(layer) :location "/path")))
 
 (ert-deftest test-filter-distant-packages--return-only-used-packages ()
   (let* ((packages (mapcar 'car (object-assoc-list
@@ -1435,7 +1435,7 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-make-packages-from-layers--symbols-only ()
-  (let* ((layer1 (cfgl-layer "layer1"
+  (let* ((layer1 (cfgl-layer
                              :name 'layer1
                              :dir "/path/"
                              :packages '(pkg1 pkg2 pkg3)))
@@ -1449,15 +1449,15 @@
     (defun layer1/init-pkg3 nil)
     (configuration-layer/make-packages-from-layers '(layer1))
     (should
-     (and (equal (cfgl-package "pkg3" :name 'pkg3 :owners '(layer1))
+     (and (equal (cfgl-package :name 'pkg3 :owners '(layer1))
                  (ht-get configuration-layer--indexed-packages 'pkg3))
-          (equal (cfgl-package "pkg2" :name 'pkg2 :owners '(layer1))
+          (equal (cfgl-package :name 'pkg2 :owners '(layer1))
                  (ht-get configuration-layer--indexed-packages 'pkg2))
-          (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))
+          (equal (cfgl-package :name 'pkg1 :owners '(layer1))
                  (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--lists-only ()
-  (let* ((layer1 (cfgl-layer "layer1"
+  (let* ((layer1 (cfgl-layer
                              :name 'layer1
                              :dir "/path/"
                              :packages '((pkg1 :location elpa :excluded t)
@@ -1473,22 +1473,22 @@
     (defun layer1/init-pkg3 nil)
     (configuration-layer/make-packages-from-layers '(layer1))
     (should
-     (and (equal (cfgl-package "pkg3"
+     (and (equal (cfgl-package
                                :name 'pkg3
                                :owners '(layer1)
                                :location 'local
                                :step 'pre)
                  (ht-get configuration-layer--indexed-packages 'pkg3))
-          (equal (cfgl-package "pkg2"
+          (equal (cfgl-package
                                :name 'pkg2
                                :owners '(layer1)
                                :location '(recipe blahblah))
                  (ht-get configuration-layer--indexed-packages 'pkg2))
-          (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1) :excluded t)
+          (equal (cfgl-package :name 'pkg1 :owners '(layer1) :excluded t)
                  (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--symbols-and-lists ()
-  (let* ((layer1 (cfgl-layer "layer1"
+  (let* ((layer1 (cfgl-layer
                              :name 'layer1
                              :dir "/path/"
                              :packages '(pkg1
@@ -1506,24 +1506,24 @@
     (defun layer1/init-pkg4 nil)
     (configuration-layer/make-packages-from-layers '(layer1))
     (should
-     (and (equal (cfgl-package "pkg4" :name 'pkg4 :owners '(layer1))
+     (and (equal (cfgl-package :name 'pkg4 :owners '(layer1))
                  (ht-get configuration-layer--indexed-packages 'pkg4))
-          (equal (cfgl-package "pkg3"
+          (equal (cfgl-package
                                :name 'pkg3
                                :owners '(layer1)
                                :location 'local
                                :step 'pre)
                  (ht-get configuration-layer--indexed-packages 'pkg3))
-          (equal (cfgl-package "pkg2"
+          (equal (cfgl-package
                                :name 'pkg2
                                :owners '(layer1)
                                :location '(recipe blahblah))
                  (ht-get configuration-layer--indexed-packages 'pkg2))
-          (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer1))
+          (equal (cfgl-package :name 'pkg1 :owners '(layer1))
                  (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--pkg2-has-no-owner-because-no-init-function ()
-  (let* ((layer2 (cfgl-layer "layer2"
+  (let* ((layer2 (cfgl-layer
                              :name 'layer2
                              :dir "/path/"
                              :packages '(pkg1 pkg2 pkg3)))
@@ -1539,19 +1539,19 @@
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer2))
      (should
-      (and (equal (cfgl-package "pkg3" :name 'pkg3 :owners '(layer2))
+      (and (equal (cfgl-package :name 'pkg3 :owners '(layer2))
                   (ht-get configuration-layer--indexed-packages 'pkg3))
-           (equal (cfgl-package "pkg2" :name 'pkg2)
+           (equal (cfgl-package :name 'pkg2)
                   (ht-get configuration-layer--indexed-packages 'pkg2))
-           (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer2))
+           (equal (cfgl-package :name 'pkg1 :owners '(layer2))
                   (ht-get configuration-layer--indexed-packages 'pkg1)))))))
 
 (ert-deftest test-make-packages-from-layers--pre-init-function ()
-  (let* ((layer3 (cfgl-layer "layer3"
+  (let* ((layer3 (cfgl-layer
                              :name 'layer3
                              :dir "/path/"
                              :packages '(pkg1)))
-         (layer4 (cfgl-layer "layer4"
+         (layer4 (cfgl-layer
                              :name 'layer4
                              :dir "/path/"
                              :packages '(pkg1)))
@@ -1563,18 +1563,18 @@
     (defun layer3/init-pkg1 nil)
     (defun layer4/pre-init-pkg1 nil)
     (configuration-layer/make-packages-from-layers '(layer3 layer4))
-    (should (equal (cfgl-package "pkg1"
+    (should (equal (cfgl-package
                                  :name 'pkg1
                                  :owners '(layer3)
                                  :pre-layers '(layer4))
                    (ht-get configuration-layer--indexed-packages 'pkg1)))))
 
 (ert-deftest test-make-packages-from-layers--post-init-function ()
-  (let* ((layer3 (cfgl-layer "layer3"
+  (let* ((layer3 (cfgl-layer
                              :name 'layer3
                              :dir "/path/"
                              :packages '(pkg1)))
-         (layer5 (cfgl-layer "layer5"
+         (layer5 (cfgl-layer
                              :name 'layer5
                              :dir "/path/"
                              :packages '(pkg1)))
@@ -1586,18 +1586,18 @@
     (defun layer3/init-pkg1 nil)
     (defun layer5/post-init-pkg1 nil)
     (configuration-layer/make-packages-from-layers '(layer3 layer5))
-    (should (equal (cfgl-package "pkg1"
+    (should (equal (cfgl-package
                                  :name 'pkg1
                                  :owners '(layer3)
                                  :post-layers '(layer5))
                    (ht-get configuration-layer--indexed-packages 'pkg1)))))
 
 (ert-deftest test-make-packages-from-layers--pre-and-post-init-functions ()
-  (let* ((layer3 (cfgl-layer "layer3"
+  (let* ((layer3 (cfgl-layer
                              :name 'layer3
                              :dir "/path/"
                              :packages '(pkg1)))
-         (layer6 (cfgl-layer "layer6"
+         (layer6 (cfgl-layer
                              :name 'layer6
                              :dir "/path/"
                              :packages '(pkg1)))
@@ -1610,7 +1610,7 @@
     (defun layer6/pre-init-pkg1 nil)
     (defun layer6/post-init-pkg1 nil)
     (configuration-layer/make-packages-from-layers '(layer3 layer6))
-    (should (equal (cfgl-package "pkg1"
+    (should (equal (cfgl-package
                                  :name 'pkg1
                                  :owners '(layer3)
                                  :pre-layers '(layer6)
@@ -1618,11 +1618,11 @@
                    (ht-get configuration-layer--indexed-packages 'pkg1)))))
 
 (ert-deftest test-make-packages-from-layers--several-init-functions-last-one-is-the-owner ()
-  (let* ((layer7 (cfgl-layer "layer7"
+  (let* ((layer7 (cfgl-layer
                              :name 'layer7
                              :dir "/path/"
                              :packages '(pkg1)))
-         (layer8 (cfgl-layer "layer8"
+         (layer8 (cfgl-layer
                              :name 'layer8
                              :dir "/path/"
                              :packages '(pkg1)))
@@ -1637,17 +1637,17 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer7 layer8))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer8 layer7))
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--layer-10-excludes-pkg2-in-layer-9 ()
-  (let* ((layer9 (cfgl-layer "layer9"
+  (let* ((layer9 (cfgl-layer
                              :name 'layer9
                              :dir "/path/"
                              :packages '(pkg1 pkg2)))
-         (layer10 (cfgl-layer "layer10"
+         (layer10 (cfgl-layer
                               :name 'layer10
                               :dir "/path/"
                               :packages '(pkg3 (pkg2 :excluded t))))
@@ -1661,19 +1661,19 @@
     (defun layer10/init-pkg3 nil)
     (configuration-layer/make-packages-from-layers '(layer9 layer10))
     (should
-     (and (equal (cfgl-package "pkg3" :name 'pkg3 :owners '(layer10))
+     (and (equal (cfgl-package :name 'pkg3 :owners '(layer10))
                  (ht-get configuration-layer--indexed-packages 'pkg3))
-          (equal (cfgl-package "pkg2" :name 'pkg2 :owners '(layer9) :excluded t)
+          (equal (cfgl-package :name 'pkg2 :owners '(layer9) :excluded t)
                  (ht-get configuration-layer--indexed-packages 'pkg2))
-          (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer9))
+          (equal (cfgl-package :name 'pkg1 :owners '(layer9))
                  (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--last-owner-can-overwrite-location ()
-  (let* ((layer13 (cfgl-layer "layer13"
+  (let* ((layer13 (cfgl-layer
                               :name 'layer13
                               :dir "/path/"
                               :packages '((pkg1 :location elpa))))
-         (layer14 (cfgl-layer "layer14"
+         (layer14 (cfgl-layer
                               :name 'layer14
                               :dir "/path/"
                               :packages '((pkg1 :location local))))
@@ -1688,18 +1688,18 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer13 layer14))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer14 layer13)
                                   :location 'local)
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--last-owner-can-overwrite-step-nil-to-pre ()
-  (let* ((layer15 (cfgl-layer "layer15"
+  (let* ((layer15 (cfgl-layer
                               :name 'layer15
                               :dir "/path/"
                               :packages '((pkg1 :step nil))))
-         (layer16 (cfgl-layer "layer16"
+         (layer16 (cfgl-layer
                               :name 'layer16
                               :dir "/path/"
                               :packages '((pkg1 :step pre))))
@@ -1714,18 +1714,18 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer15 layer16))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer16 layer15)
                                   :step 'pre)
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--last-owner-cannot-overwrite-step-pre-to-nil ()
-  (let* ((layer15 (cfgl-layer "layer15"
+  (let* ((layer15 (cfgl-layer
                               :name 'layer15
                               :dir "/path/"
                               :packages '((pkg1 :step pre))))
-         (layer16 (cfgl-layer "layer16"
+         (layer16 (cfgl-layer
                               :name 'layer16
                               :dir "/path/"
                               :packages '((pkg1 :step nil))))
@@ -1740,18 +1740,18 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer15 layer16))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer16 layer15)
                                   :step 'pre)
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--last-owner-can-overwrite-exclude ()
-  (let* ((layer17 (cfgl-layer "layer17"
+  (let* ((layer17 (cfgl-layer
                               :name 'layer17
                               :dir "/path/"
                               :packages '(pkg1)))
-         (layer18 (cfgl-layer "layer18"
+         (layer18 (cfgl-layer
                               :name 'layer18
                               :dir "/path/"
                               :packages '((pkg1 :excluded t))
@@ -1767,14 +1767,14 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer17 layer18))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer18 layer17)
                                   :excluded t)
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--owner-layer-can-define-toggle ()
-  (let* ((layer19 (cfgl-layer "layer19"
+  (let* ((layer19 (cfgl-layer
                               :name 'layer19
                               :dir "/path/"
                               :packages '((pkg1 :toggle (foo-toggle)))))
@@ -1786,18 +1786,18 @@
     (defun layer19/init-pkg1 nil)
     (let (configuration-layer--used-packages))
     (configuration-layer/make-packages-from-layers '(layer19))
-    (should (equal (cfgl-package "pkg1"
+    (should (equal (cfgl-package
                                  :name 'pkg1
                                  :owners '(layer19)
                                  :toggle '(foo-toggle))
                    (ht-get configuration-layer--indexed-packages 'pkg1)))))
 
 (ert-deftest test-make-packages-from-layers--not-owner-layer-can-define-toggle-with-warning ()
-  (let* ((layer20 (cfgl-layer "layer20"
+  (let* ((layer20 (cfgl-layer
                               :name 'layer20
                               :dir "/path/"
                               :packages '(pkg1)))
-         (layer21 (cfgl-layer "layer21"
+         (layer21 (cfgl-layer
                               :name 'layer21
                               :dir "/path/"
                               :packages '((pkg1 :toggle (foo-toggle)))))
@@ -1812,7 +1812,7 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer20 layer21))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer20)
                                   :post-layers '(layer21)
@@ -1820,11 +1820,11 @@
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--layer-can-override-toggle ()
-  (let* ((layer22 (cfgl-layer "layer22"
+  (let* ((layer22 (cfgl-layer
                               :name 'layer22
                               :dir "/path/"
                               :packages '((pkg1 :toggle (foo-toggle)))))
-         (layer23 (cfgl-layer "layer23"
+         (layer23 (cfgl-layer
                               :name 'layer23
                               :dir "/path/"
                               :packages '((pkg1 :toggle (bar-toggle)))))
@@ -1839,19 +1839,19 @@
     (mocker-let
      ((configuration-layer//warning (msg &rest args) ((:output nil :occur 1))))
      (configuration-layer/make-packages-from-layers '(layer22 layer23))
-     (should (equal (cfgl-package "pkg1"
+     (should (equal (cfgl-package
                                   :name 'pkg1
                                   :owners '(layer23 layer22)
                                   :toggle '(bar-toggle))
                     (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-layers--not-selected-packages-are-not-excluded ()
-  (let* ((layer24 (cfgl-layer "layer24"
+  (let* ((layer24 (cfgl-layer
                               :name 'layer24
                               :dir "/path/"
                               :packages '(pkg1 (pkg2 :location local))
                               :selected-packages '(pkg2)))
-         (layer25 (cfgl-layer "layer25"
+         (layer25 (cfgl-layer
                               :name 'layer25
                               :dir "/path/"
                               :packages '(pkg1 (pkg2 :location local))
@@ -1867,12 +1867,12 @@
     (defun layer25/post-init-pkg2 nil)
     (configuration-layer/make-packages-from-layers '(layer24 layer25))
     (should
-     (and (equal (cfgl-package "pkg1"
+     (and (equal (cfgl-package
                                :name 'pkg1
                                :owners '(layer25)
                                :excluded nil)
                  (ht-get configuration-layer--indexed-packages 'pkg1))
-          (equal (cfgl-package "pkg2"
+          (equal (cfgl-package
                                :name 'pkg2
                                :owners '(layer24)
                                :location 'local
@@ -1880,12 +1880,12 @@
                  (ht-get configuration-layer--indexed-packages 'pkg2))))))
 
 (ert-deftest test-make-packages-from-layers--not-selected-package-in-a-layer-can-still-be-created-with-no-owner ()
-  (let* ((layer26 (cfgl-layer "layer26"
+  (let* ((layer26 (cfgl-layer
                               :name 'layer26
                               :dir "/path/"
                               :packages '(pkg1 (pkg2 :location local))
                               :selected-packages '(pkg2)))
-         (layer27 (cfgl-layer "layer27"
+         (layer27 (cfgl-layer
                               :name 'layer27
                               :dir "/path/"
                               :packages '(pkg1 pkg2)))
@@ -1900,12 +1900,12 @@
     (defun layer27/post-init-pkg2 nil)
     (configuration-layer/make-packages-from-layers '(layer26 layer27))
     (should
-     (and (equal (cfgl-package "pkg1"
+     (and (equal (cfgl-package
                                :name 'pkg1
                                :post-layers '(layer27)
                                :owners nil)
                  (ht-get configuration-layer--indexed-packages 'pkg1))
-          (equal (cfgl-package "pkg2"
+          (equal (cfgl-package
                                :name 'pkg2
                                :owners '(layer26)
                                :post-layers '(layer27)
@@ -1916,13 +1916,13 @@
   ;; we expect that :excluded is still nil
   (let* (configuration-layer--used-layers
          (configuration-layer--indexed-layers (make-hash-table :size 1024))
-         (layer28 (cfgl-layer "layer28"
+         (layer28 (cfgl-layer
                               :name 'layer28
                               :packages '((pkg1 :excluded nil))))
-         (layer29 (cfgl-layer "layer29"
+         (layer29 (cfgl-layer
                               :name 'layer29
                               :packages '((pkg1 :excluded t))))
-         (expected (cfgl-package "pkg1"
+         (expected (cfgl-package
                                  :name 'pkg1
                                  :owners '(layer28)
                                  :excluded nil))
@@ -1958,11 +1958,11 @@
     (configuration-layer/make-packages-from-layers '(layer-dotfile-1) 'used)
     (configuration-layer/make-packages-from-dotfile 'used)
     (should
-     (and (equal (cfgl-package "pkg3" :name 'pkg3 :owners '(dotfile))
+     (and (equal (cfgl-package :name 'pkg3 :owners '(dotfile))
                  (ht-get configuration-layer--indexed-packages 'pkg3))
-          (equal (cfgl-package "pkg2" :name 'pkg2 :owners '(layer-dotfile-1))
+          (equal (cfgl-package :name 'pkg2 :owners '(layer-dotfile-1))
                  (ht-get configuration-layer--indexed-packages 'pkg2))
-          (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer-dotfile-1))
+          (equal (cfgl-package :name 'pkg1 :owners '(layer-dotfile-1))
                  (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 (ert-deftest test-make-packages-from-dotfile--dotfile-cannot-own-package-owned-by-layer ()
@@ -1980,7 +1980,7 @@
     (configuration-layer/make-packages-from-layers '(layer-dotfile-2) 'used)
     (configuration-layer/make-packages-from-dotfile 'used)
     (should
-     (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer-dotfile-2))
+     (equal (cfgl-package :name 'pkg1 :owners '(layer-dotfile-2))
             (ht-get configuration-layer--indexed-packages 'pkg1)))))
 
 (ert-deftest test-make-packages-from-dotfile--dotfile-excludes-pkg2-in-layer-11 ()
@@ -2001,12 +2001,12 @@
     (configuration-layer/make-packages-from-layers '(layer-dotfile-3) 'used)
     (configuration-layer/make-packages-from-dotfile 'used)
     (should
-     (and (equal (cfgl-package "pkg3" :name 'pkg3 :owners '(layer-dotfile-3))
+     (and (equal (cfgl-package :name 'pkg3 :owners '(layer-dotfile-3))
                  (ht-get configuration-layer--indexed-packages 'pkg3))
-          (equal (cfgl-package "pkg2" :name 'pkg2 :owners '(layer-dotfile-3)
+          (equal (cfgl-package :name 'pkg2 :owners '(layer-dotfile-3)
                                :excluded t)
                  (ht-get configuration-layer--indexed-packages 'pkg2))
-          (equal (cfgl-package "pkg1" :name 'pkg1 :owners '(layer-dotfile-3))
+          (equal (cfgl-package :name 'pkg1 :owners '(layer-dotfile-3))
                  (ht-get configuration-layer--indexed-packages 'pkg1))))))
 
 ;; ---------------------------------------------------------------------------
@@ -2020,23 +2020,23 @@
          (configuration-layer--indexed-packages (make-hash-table :size 2048))
          (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-layers
-     `(,(cfgl-layer "layerall1"
+     `(,(cfgl-layer
                     :name 'layerall1
                     :packages '(pkg1)
                     :dir "/layerall1/")
-       ,(cfgl-layer "layerall2"
+       ,(cfgl-layer
                     :name 'layerall2
                     :packages '(pkg2 pkg6)
                     :dir "/layerall2/")
-       ,(cfgl-layer "layerall3"
+       ,(cfgl-layer
                     :name 'layerall3
                     :packages '(pkg3)
                     :dir "/layerall3/")
-       ,(cfgl-layer "layerall4"
+       ,(cfgl-layer
                     :name 'layerall4
                     :packages '(pkg4 pkg7 pkg8)
                     :dir "/layerall4/")
-       ,(cfgl-layer "layerall5"
+       ,(cfgl-layer
                     :name 'layerall5
                     :packages '(pkg5 pkg9)
                     :dir "/layerall5/")))
@@ -2073,12 +2073,12 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-pre-configure-package--pre-init-is-evaluated ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :pre-layers '(layer2)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :pre-layers '(layer2)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)
-                          ,(cfgl-layer "layer2" :name 'layer2)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)
+                          ,(cfgl-layer :name 'layer2)) t)
     (defun layer1/init-pkg nil)
     (defun layer2/pre-init-pkg nil)
     (mocker-let
@@ -2091,12 +2091,12 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-post-configure-package--post-init-is-evaluated ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :post-layers '(layer2)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :post-layers '(layer2)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)
-                          ,(cfgl-layer "layer2" :name 'layer2)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)
+                          ,(cfgl-layer :name 'layer2)) t)
     (defun layer1/init-pkg nil)
     (defun layer2/post-init-pkg nil)
     (mocker-let
@@ -2109,11 +2109,11 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-configure-package--init-is-evaluated ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (defun layer1/init-pkg nil)
     (mocker-let
      ((spacemacs/update-progress-bar nil ((:output nil)))
@@ -2122,7 +2122,7 @@
      (configuration-layer//configure-package pkg))))
 
 (ert-deftest test-configure-package--disabled-for-does-not-call-pre-post-init ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1)
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1)
                            :pre-layers '(layer2)
                            :post-layers '(layer3)))
         configuration-layer--used-layers
@@ -2130,9 +2130,9 @@
         (witness nil)
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-layers
-     `(,(cfgl-layer "layer1" :name 'layer1 :disabled-for '(layer2 layer3))
-       ,(cfgl-layer "layer2" :name 'layer2)
-       ,(cfgl-layer "layer2" :name 'layer3)) t)
+     `(,(cfgl-layer :name 'layer1 :disabled-for '(layer2 layer3))
+       ,(cfgl-layer :name 'layer2)
+       ,(cfgl-layer :name 'layer3)) t)
     (defun layer1/init-pkg () (push 'init witness))
     (defun layer2/pre-init-pkg () (push 'pre-init witness))
     (defun layer3/post-init-pkg () (push 'post-init witness))
@@ -2143,7 +2143,7 @@
      (should (equal '(init) witness)))))
 
 (ert-deftest test-configure-package--enabled-for-unspecified-does-call-pre-post-init ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1)
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1)
                            :pre-layers '(layer2)
                            :post-layers '(layer3)))
         configuration-layer--used-layers
@@ -2151,9 +2151,9 @@
         (witness nil)
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-layers
-     `(,(cfgl-layer "layer1" :name 'layer1 :enabled-for 'unspecified)
-       ,(cfgl-layer "layer2" :name 'layer2)
-       ,(cfgl-layer "layer2" :name 'layer3)) t)
+     `(,(cfgl-layer :name 'layer1 :enabled-for 'unspecified)
+       ,(cfgl-layer :name 'layer2)
+       ,(cfgl-layer :name 'layer3)) t)
     (defun layer1/init-pkg () (push 'init witness))
     (defun layer2/pre-init-pkg () (push 'pre-init witness))
     (defun layer3/post-init-pkg () (push 'post-init witness))
@@ -2166,7 +2166,7 @@
      (should (equal '(post-init init pre-init) witness)))))
 
 (ert-deftest test-configure-package--enabled-for-nil-does-not-call-pre-post-init ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1)
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1)
                            :pre-layers '(layer2)
                            :post-layers '(layer3)))
         configuration-layer--used-layers
@@ -2174,9 +2174,9 @@
         (witness nil)
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-layers
-     `(,(cfgl-layer "layer1" :name 'layer1 :enabled-for nil)
-       ,(cfgl-layer "layer2" :name 'layer2)
-       ,(cfgl-layer "layer2" :name 'layer3)) t)
+     `(,(cfgl-layer :name 'layer1 :enabled-for nil)
+       ,(cfgl-layer :name 'layer2)
+       ,(cfgl-layer :name 'layer3)) t)
     (defun layer1/init-pkg () (push 'init witness))
     (defun layer2/pre-init-pkg () (push 'pre-init witness))
     (defun layer3/post-init-pkg () (push 'post-init witness))
@@ -2187,7 +2187,7 @@
      (should (equal '(init) witness)))))
 
 (ert-deftest test-configure-package--enabled-for-partial ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1)
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1)
                            :pre-layers '(layer2)
                            :post-layers '(layer3)))
         configuration-layer--used-layers
@@ -2195,9 +2195,9 @@
         (witness nil)
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-layers
-     `(,(cfgl-layer "layer1" :name 'layer1 :enabled-for '(layer2))
-       ,(cfgl-layer "layer2" :name 'layer2)
-       ,(cfgl-layer "layer2" :name 'layer3)) t)
+     `(,(cfgl-layer :name 'layer1 :enabled-for '(layer2))
+       ,(cfgl-layer :name 'layer2)
+       ,(cfgl-layer :name 'layer3)) t)
     (defun layer1/init-pkg () (push 'init witness))
     (defun layer2/pre-init-pkg () (push 'pre-init witness))
     (defun layer3/post-init-pkg () (push 'post-init witness))
@@ -2213,69 +2213,69 @@
 ;; ---------------------------------------------------------------------------
 
 (ert-deftest test-configure-packages-2--pre-init-is-evaluated-before-init ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :pre-layers '(layer2)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :pre-layers '(layer2)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (witness nil)
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)
-                          ,(cfgl-layer "layer2" :name 'layer2)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)
+                          ,(cfgl-layer :name 'layer2)) t)
     (helper--add-packages (list pkg) t)
     (defun layer1/init-pkg () (push 'init witness))
     (defun layer2/pre-init-pkg () (push 'pre-init witness))
-    (configuration-layer//configure-packages-2 `(,(oref pkg :name)))
+    (configuration-layer//configure-packages-2 (list (oref pkg name)))
     (should (equal '(init pre-init) witness))))
 
 (ert-deftest test-configure-packages-2--post-init-is-evaluated-after-init ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :post-layers '(layer2)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :post-layers '(layer2)))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (witness nil)
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)
-                          ,(cfgl-layer "layer2" :name 'layer2)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)
+                          ,(cfgl-layer :name 'layer2)) t)
     (helper--add-packages (list pkg) t)
     (defun layer1/init-pkg () (push 'init witness))
     (defun layer2/post-init-pkg () (push 'post-init witness))
-    (configuration-layer//configure-packages-2 `(,(oref pkg :name)))
+    (configuration-layer//configure-packages-2 (list (oref pkg name)))
     (should (equal '(post-init init) witness))))
 
 (ert-deftest test-configure-packages-2--package-w/-layer-owner-is-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1)))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((configuration-layer//configure-package (p) ((:occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--site-package-is-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :location 'site))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :location 'site))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((configuration-layer//configure-package (p) ((:occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--toggle-t-is-configured ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :toggle t))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :toggle t))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((configuration-layer//configure-package (p) ((:occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--toggle-nil-is-not-configured ()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :toggle nil))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :toggle nil))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
@@ -2283,30 +2283,30 @@
     (mocker-let
      ((configuration-layer//configure-package (p) nil)
       (spacemacs-buffer/message (m) ((:output nil))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--protected-package-is-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :protected t))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :protected t))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((configuration-layer//configure-package (p) ((:occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--protected-excluded-package-is-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :excluded t :protected t))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :excluded t :protected t))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((configuration-layer//configure-package (p) ((:occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--excluded-package-is-not-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :excluded t))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :excluded t))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
@@ -2314,10 +2314,10 @@
     (mocker-let
      ((configuration-layer//configure-package (p) nil)
       (spacemacs-buffer/message (m) ((:output nil))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--package-w/o-owner-is-not-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners nil))
+  (let ((pkg (cfgl-package :name 'pkg :owners nil))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
@@ -2325,11 +2325,11 @@
     (mocker-let
      ((configuration-layer//configure-package (p) nil)
       (spacemacs-buffer/message (m) ((:output nil))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest
     test-configure-packages-2--package-owned-by-dotfile-is-not-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(dotfile)))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(dotfile)))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
@@ -2337,10 +2337,10 @@
     (mocker-let
      ((configuration-layer//configure-package (p) nil)
       (spacemacs-buffer/message (m) ((:output nil))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest test-configure-packages-2--lazy-install-package-is-not-configured()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer) :lazy-install t))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer) :lazy-install t))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (mocker-mock-default-record-cls 'mocker-stub-record))
@@ -2348,34 +2348,34 @@
     (mocker-let
      ((configuration-layer//configure-package (p) nil)
       (spacemacs-buffer/message (m) ((:output nil))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 (ert-deftest
     test-configure-packages-2--local-package-w/-layer-owner-update-load-path()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(layer1) :location 'local))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(layer1) :location 'local))
         configuration-layer--used-layers
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (expected-load-path load-path)
         (mocker-mock-default-record-cls 'mocker-stub-record))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1 :dir "/path/")) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1 :dir "/path/")) t)
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((configuration-layer//configure-package (p) ((:occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name)))
+     (configuration-layer//configure-packages-2 (list (oref pkg name)))
      (push "/path/local/pkg/" expected-load-path)
      (should (equal expected-load-path load-path)))))
 
 (ert-deftest
     test-configure-packages-2--local-package-w/-dotfile-owner-update-load-path()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners '(dotfile) :location 'local))
+  (let ((pkg (cfgl-package :name 'pkg :owners '(dotfile) :location 'local))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (expected-load-path load-path)
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
-    (configuration-layer//configure-packages-2 `(,(oref pkg :name)))
+    (configuration-layer//configure-packages-2 (list (oref pkg name)))
     (push (file-name-as-directory
            (concat spacemacs-private-directory "local/pkg"))
           expected-load-path)
@@ -2383,7 +2383,7 @@
 
 (ert-deftest
     test-configure-packages-2--local-package-w/o-owner-doesnt-update-load-path()
-  (let ((pkg (cfgl-package "pkg" :name 'pkg :owners nil :location 'local))
+  (let ((pkg (cfgl-package :name 'pkg :owners nil :location 'local))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048))
         (old-load-path load-path)
@@ -2391,12 +2391,12 @@
     (helper--add-packages (list pkg) t)
     (mocker-let
      ((spacemacs-buffer/message (m) ((:output nil))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name)))
+     (configuration-layer//configure-packages-2 (list (oref pkg name)))
      (should (equal load-path old-load-path)))))
 
 (ert-deftest
     test-configure-packages-2--local-package-w/-string-location-update-load-path()
-  (let ((pkg (cfgl-package "pkg"
+  (let ((pkg (cfgl-package
                            :name 'pkg
                            :owners '(dotfile)
                            :location spacemacs-docs-directory))
@@ -2405,13 +2405,13 @@
         (expected-load-path load-path)
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (helper--add-packages (list pkg) t)
-    (configuration-layer//configure-packages-2 `(,(oref pkg :name)))
+    (configuration-layer//configure-packages-2 (list (oref pkg name)))
     (push spacemacs-docs-directory expected-load-path)
     (should (equal expected-load-path load-path))))
 
 (ert-deftest
     test-configure-packages-2--local-package-w/-bad-string-location-gives-warning()
-  (let ((pkg (cfgl-package "pkg"
+  (let ((pkg (cfgl-package
                            :name 'pkg
                            :owners '(dotfile)
                            :location "/this/directory/does/not/exist/"))
@@ -2423,7 +2423,7 @@
      ((configuration-layer//warning
        (msg &rest args)
        ((:record-cls 'mocker-stub-record :output nil :occur 1))))
-     (configuration-layer//configure-packages-2 `(,(oref pkg :name))))))
+     (configuration-layer//configure-packages-2 (list (oref pkg name))))))
 
 ;; ---------------------------------------------------------------------------
 ;; configuration-layer//sort-packages
@@ -2443,7 +2443,7 @@
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (helper--add-packages
      `(,(configuration-layer/make-package '(pkg1 :location (recipe blah))
                                           'layer1)
@@ -2455,7 +2455,7 @@
         (configuration-layer--indexed-layers (make-hash-table :size 1024))
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048)))
-    (helper--add-layers `(,(cfgl-layer "layer1" :name 'layer1)) t)
+    (helper--add-layers `(,(cfgl-layer :name 'layer1)) t)
     (helper--add-packages
      `(,(configuration-layer/make-package '(pkg1 :location (recipe blah))
                                           'layer1)
@@ -2525,18 +2525,18 @@
          (pkgs (list pkg1 pkg2 pkg3 pkg4 pkg5 pkg6 pkg7 pkg8)))
     (helper--add-layers
      `(,(cfgl-layer "layer-filter-1" :name 'layer-filter-1)) t)
-    (oset pkg1 :excluded t)
-    (oset pkg3 :excluded t)
-    (oset pkg5 :excluded t)
-    (oset pkg6 :excluded t)
+    (oset pkg1 excluded t)
+    (oset pkg3 excluded t)
+    (oset pkg5 excluded t)
+    (oset pkg6 excluded t)
     (should
-     (equal (list (cfgl-package "pkg2" :name 'pkg2 :owners '(layer-filter-1))
-                  (cfgl-package "pkg4" :name 'pkg4 :owners '(layer-filter-1))
-                  (cfgl-package "pkg7" :name 'pkg7 :owners '(layer-filter-1))
-                  (cfgl-package "pkg8" :name 'pkg8 :owners '(layer-filter-1)))
+     (equal (list (cfgl-package :name 'pkg2 :owners '(layer-filter-1))
+                  (cfgl-package :name 'pkg4 :owners '(layer-filter-1))
+                  (cfgl-package :name 'pkg7 :owners '(layer-filter-1))
+                  (cfgl-package :name 'pkg8 :owners '(layer-filter-1)))
             (configuration-layer/filter-objects
              pkgs (lambda (x)
-                    (not (oref x :excluded))))))))
+                    (not (oref x excluded))))))))
 
 (ert-deftest test-filter-packages--expample-filter-local-packages ()
   (defun layer-filter-2/init-pkg1 nil)
@@ -2560,18 +2560,18 @@
          (pkgs (list pkg1 pkg2 pkg3 pkg4 pkg5 pkg6 pkg7 pkg8)))
     (helper--add-layers
      `(,(cfgl-layer "layer-filter-2" :name 'layer-filter-2)) t)
-    (oset pkg1 :location 'local)
-    (oset pkg3 :location 'local)
-    (oset pkg5 :location 'local)
-    (oset pkg6 :location 'local)
+    (oset pkg1 location 'local)
+    (oset pkg3 location 'local)
+    (oset pkg5 location 'local)
+    (oset pkg6 location 'local)
     (should
-     (equal (list (cfgl-package "pkg2" :name 'pkg2 :owners '(layer-filter-2))
-                  (cfgl-package "pkg4" :name 'pkg4 :owners '(layer-filter-2))
-                  (cfgl-package "pkg7" :name 'pkg7 :owners '(layer-filter-2))
-                  (cfgl-package "pkg8" :name 'pkg8 :owners '(layer-filter-2)))
+     (equal (list (cfgl-package :name 'pkg2 :owners '(layer-filter-2))
+                  (cfgl-package :name 'pkg4 :owners '(layer-filter-2))
+                  (cfgl-package :name 'pkg7 :owners '(layer-filter-2))
+                  (cfgl-package :name 'pkg8 :owners '(layer-filter-2)))
             (configuration-layer/filter-objects
              pkgs (lambda (x)
-                    (not (eq 'local (oref x :location)))))))))
+                    (not (eq 'local (oref x location)))))))))
 
 
 (ert-deftest test-filter-packages--example-filter-packages-local-or-excluded ()
@@ -2596,21 +2596,21 @@
          (pkgs (list pkg1 pkg2 pkg3 pkg4 pkg5 pkg6 pkg7 pkg8)))
     (helper--add-layers
      `(,(cfgl-layer "layer-filter-4" :name 'layer-filter-4)) t)
-    (oset pkg1 :location 'local)
-    (oset pkg1 :excluded t)
-    (oset pkg3 :location 'local)
-    (oset pkg5 :location 'local)
-    (oset pkg6 :location 'local)
-    (oset pkg6 :excluded t)
-    (oset pkg7 :excluded t)
+    (oset pkg1 location 'local)
+    (oset pkg1 excluded t)
+    (oset pkg3 location 'local)
+    (oset pkg5 location 'local)
+    (oset pkg6 location 'local)
+    (oset pkg6 excluded t)
+    (oset pkg7 excluded t)
     (should
-     (equal (list (cfgl-package "pkg2" :name 'pkg2 :owners '(layer-filter-3))
-                  (cfgl-package "pkg4" :name 'pkg4 :owners '(layer-filter-3))
-                  (cfgl-package "pkg8" :name 'pkg8 :owners '(layer-filter-3)))
+     (equal (list (cfgl-package :name 'pkg2 :owners '(layer-filter-3))
+                  (cfgl-package :name 'pkg4 :owners '(layer-filter-3))
+                  (cfgl-package :name 'pkg8 :owners '(layer-filter-3)))
             (configuration-layer/filter-objects
              pkgs (lambda (x)
-                    (and (not (eq 'local (oref x :location)))
-                         (not (oref x :excluded)))))))))
+                    (and (not (eq 'local (oref x location)))
+                         (not (oref x excluded)))))))))
 
 (ert-deftest test-filter-packages--example-filter-packages-both-local-and-excluded ()
   (defun layer-filter-4/init-pkg1 nil)
@@ -2634,33 +2634,33 @@
          (pkgs (list pkg1 pkg2 pkg3 pkg4 pkg5 pkg6 pkg7 pkg8)))
     (helper--add-layers
      `(,(cfgl-layer "layer-filter-4" :name 'layer-filter-4)) t)
-    (oset pkg1 :location 'local)
-    (oset pkg1 :excluded t)
-    (oset pkg3 :location 'local)
-    (oset pkg5 :excluded t)
-    (oset pkg6 :location 'local)
-    (oset pkg6 :excluded t)
+    (oset pkg1 location 'local)
+    (oset pkg1 excluded t)
+    (oset pkg3 location 'local)
+    (oset pkg5 excluded t)
+    (oset pkg6 location 'local)
+    (oset pkg6 excluded t)
     (should
-     (equal (list (cfgl-package "pkg2"
+     (equal (list (cfgl-package
                                 :name 'pkg2
                                 :owners '(layer-filter-4))
-                  (cfgl-package "pkg3"
+                  (cfgl-package
                                 :name 'pkg3
                                 :location 'local
                                 :owners '(layer-filter-4))
-                  (cfgl-package "pkg4" :name 'pkg4
+                  (cfgl-package :name 'pkg4
                                 :owners '(layer-filter-4))
-                  (cfgl-package "pkg5" :name 'pkg5
+                  (cfgl-package :name 'pkg5
                                 :excluded t
                                 :owners '(layer-filter-4))
-                  (cfgl-package "pkg7" :name 'pkg7
+                  (cfgl-package :name 'pkg7
                                 :owners '(layer-filter-4))
-                  (cfgl-package "pkg8" :name 'pkg8
+                  (cfgl-package :name 'pkg8
                                 :owners '(layer-filter-4)))
       (configuration-layer/filter-objects
        pkgs (lambda (x)
-              (or (not (eq 'local (oref x :location)))
-                  (not (oref x :excluded)))))))))
+              (or (not (eq 'local (oref x location)))
+                  (not (oref x excluded)))))))))
 
 ;; ---------------------------------------------------------------------------
 ;; configuration-layer//directory-type
@@ -2824,10 +2824,10 @@
         (auto-mode-alist '(("\\.pkg1\\'" . pkg1)
                            ("\\.pkg2\\'" . pkg2))))
     (helper--add-layers
-     (list (cfgl-layer "layer" :name 'layer :packages '(pkg1 pkg2))) t)
+     (list (cfgl-layer :name 'layer :packages '(pkg1 pkg2))) t)
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :owners '(layer))
-           (cfgl-package "pkg2" :name 'pkg2 :owners '(layer))) t)
+     (list (cfgl-package :name 'pkg1 :owners '(layer))
+           (cfgl-package :name 'pkg2 :owners '(layer))) t)
     (should (equal '((pkg2 . "\\(\\.pkg2\\'\\)")
                      (pkg1 . "\\(\\.pkg1\\'\\)"))
                    (configuration-layer//lazy-install-extensions-for-layer
@@ -2835,9 +2835,9 @@
 
 (ert-deftest test-lazy-install-extensions-for-layer--not-owned-package ()
   (let ((configuration-layer--layers
-         (list (cfgl-layer "layer" :name 'layer :packages '(pkg1))))
+         (list (cfgl-layer :name 'layer :packages '(pkg1))))
         (configuration-layer--used-packages
-         (list (cfgl-package "pkg1" :name 'pkg1 :owners '(other))))
+         (list (cfgl-package :name 'pkg1 :owners '(other))))
         (auto-mode-alist '(("\\.pkg1\\'" . pkg1))))
     (should (null (configuration-layer//lazy-install-extensions-for-layer 'layer)))))
 
@@ -2862,14 +2862,14 @@
   (let (configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :location 'built-in)
-           (cfgl-package "pkg2" :name 'pkg2 :location 'built-in)
-           (cfgl-package "pkg3" :name 'pkg3 :location 'elpa)
-           (cfgl-package "pkg4" :name 'pkg4 :location 'elpa)
-           (cfgl-package "pkg5" :name 'pkg5 :location 'elpa)
-           (cfgl-package "pkg6" :name 'pkg6 :location 'local)
-           (cfgl-package "pkg7" :name 'pkg7 :location '(recipe :foo bar))
-           (cfgl-package "pkg8" :name 'pkg8 :location '(recipe :foo bar))) t)
+     (list (cfgl-package :name 'pkg1 :location 'built-in)
+           (cfgl-package :name 'pkg2 :location 'built-in)
+           (cfgl-package :name 'pkg3 :location 'elpa)
+           (cfgl-package :name 'pkg4 :location 'elpa)
+           (cfgl-package :name 'pkg5 :location 'elpa)
+           (cfgl-package :name 'pkg6 :location 'local)
+           (cfgl-package :name 'pkg7 :location '(recipe :foo bar))
+           (cfgl-package :name 'pkg8 :location '(recipe :foo bar))) t)
     (should (equal '((total 8)
                      (elpa 3)
                      (recipe 2)
@@ -2883,14 +2883,14 @@
         configuration-layer--used-packages
         (configuration-layer--indexed-packages (make-hash-table :size 2048)))
     (helper--add-packages
-     (list (cfgl-package "pkg1" :name 'pkg1 :location 'built-in)
-           (cfgl-package "pkg2" :name 'pkg2 :location 'built-in)
-           (cfgl-package "pkg3" :name 'pkg3 :location 'elpa)
-           (cfgl-package "pkg4" :name 'pkg4 :location 'elpa)
-           (cfgl-package "pkg5" :name 'pkg5 :location 'elpa)
-           (cfgl-package "pkg6" :name 'pkg6 :location 'local)
-           (cfgl-package "pkg7" :name 'pkg7 :location '(recipe :foo bar))
-           (cfgl-package "pkg8" :name 'pkg8 :location '(recipe :foo bar))) t)
+     (list (cfgl-package :name 'pkg1 :location 'built-in)
+           (cfgl-package :name 'pkg2 :location 'built-in)
+           (cfgl-package :name 'pkg3 :location 'elpa)
+           (cfgl-package :name 'pkg4 :location 'elpa)
+           (cfgl-package :name 'pkg5 :location 'elpa)
+           (cfgl-package :name 'pkg6 :location 'local)
+           (cfgl-package :name 'pkg7 :location '(recipe :foo bar))
+           (cfgl-package :name 'pkg8 :location '(recipe :foo bar))) t)
     (setq stats (configuration-layer/configured-packages-stats
                  configuration-layer--used-packages))
     (should (equal 8 (+ (cadr (assq 'elpa stats))
