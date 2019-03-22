@@ -1574,7 +1574,10 @@ RNAME is the name symbol of another existing layer."
       (let ((var (pop variables)))
         (if (consp variables)
             (condition-case-unless-debug err
-                (set-default var (eval (pop variables)))
+                (progn
+                  (unless (custom-variable-p var)
+                    (configuration-layer//warning "Setting non-customizable variable '%s' in layer '%s'" var (oref layer name)))
+                  (set-default var (eval (pop variables))))
               ('error
                (configuration-layer//error
                 (concat "\nAn error occurred while setting layer "

@@ -1196,7 +1196,7 @@
     (mocker-let
      ((configuration-layer//warning
        (msg &rest args)
-       ((:record-cls 'mocker-stub-record :output nil :occur 1))))
+       ((:record-cls 'mocker-stub-record :output nil :occur 2))))
      (let ((var1 'foo)
            (var2 'foo))
        (configuration-layer//set-layers-variables '(layer))
