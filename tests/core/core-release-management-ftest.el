@@ -35,9 +35,14 @@
 ;; ---------------------------------------------------------------------------
 ;; spacemacs//git-fetch-tags
 ;; ---------------------------------------------------------------------------
+(defun test-git-fetch-check-online-helper ()
+  (= 0
+     (call-process-shell-command "git fetch --dry-run")))
 
 (ert-deftest test-git-fetch-tags--command-is-working ()
+  (skip-unless test-git-fetch-check-online-helper)
   (should (equal t (spacemacs//git-fetch-tags "origin" "master"))))
 
 (ert-deftest test-git-fetch-tags--input-is-not-a-remote ()
+  (skip-unless test-git-fetch-check-online-helper)
   (should (equal nil (spacemacs//git-fetch-tags "qwerty" "master"))))
