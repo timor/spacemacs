@@ -2343,7 +2343,7 @@ depends on it."
                             (expand-file-name package-user-dir))
                            (expand-file-name dir)))
         (spacemacs-buffer/message "Package '%s' installed site-wide, not deleting." name)
-      (package-delete p force nosave)))
+      (package-delete pkg-desc force nosave)))
   )
 
 (defun configuration-layer//package-delete (pkg-name)
