@@ -2611,13 +2611,13 @@ ELPA stable repository."
   (require 'tar-mode)
   (let ((untar t)
         (archive (configuration-layer//stable-elpa-tarball-local-file))
+        (name configuration-layer-stable-elpa-name)
         (sig-file (configuration-layer//stable-elpa-tarball-local-sign-file))
         large-file-warning-threshold)
     (with-current-buffer (find-file-noselect archive)
       ;; verify signature
       (when dotspacemacs-verify-spacelpa-archives
-        (let ((name configuration-layer-stable-elpa-name)
-              (sig-string (with-current-buffer (find-file-noselect sig-file)
+        (let ((sig-string (with-current-buffer (find-file-noselect sig-file)
                             (buffer-string)))
               (context (epg-make-context 'OpenPGP))
               (homedir (configuration-layer//stable-elpa-directory)))
