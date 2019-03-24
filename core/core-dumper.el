@@ -26,6 +26,13 @@
   (when (eq 'not-dumped spacemacs-dump-mode)
     (or idle-time t)))
 
+(defmacro spacemacs|when-dumping-strict (&rest body)
+  "Execute body if we are really dumping.
+You should not used this function, it is reserved for some specific process."
+  (declare (indent defun))
+  `(when (eq 'dumping spacemacs-dump-mode)
+     ,@body))
+
 (defmacro spacemacs|require (&rest args)
   "Require feature if dumping."
   (spacemacs|when-dumping-strict `(require ,@args)))
@@ -44,13 +51,6 @@ This function considers that we are always dumping if dumping is not supported.
 You should always use this function."
   (declare (indent defun))
   `(when (not (eq 'dumped spacemacs-dump-mode))
-     ,@body))
-
-(defmacro spacemacs|when-dumping-strict (&rest body)
-  "Execute body if we are really dumping.
-You should not used this function, it is reserved for some specific process."
-  (declare (indent defun))
-  `(when (eq 'dumping spacemacs-dump-mode)
      ,@body))
 
 (defmacro spacemacs|unless-dumping (&rest body)
