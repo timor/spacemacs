@@ -318,7 +318,7 @@ LAYER has to be installed for this method to work properly."
                  (when (eq (oref layer name) (car (oref pkg owners))) x)))
              (cfgl-layer-get-packages layer props))))
 
-(cl-defmethod cfgl-layer-owned-packages ((layer nil) &optional props)
+(cl-defmethod cfgl-layer-owned-packages ((layer (eql nil)) &optional props)
   "Accept nil as argument and return nil."
   layer props
   nil)
