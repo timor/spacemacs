@@ -1,4 +1,4 @@
-;;; core-spacemacs.el --- Spacemacs Core File
+;;; core-spacemacs.el --- Spacemacs Core File  -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
@@ -67,7 +67,7 @@
              (concat spacemacs-docs-directory "COMMUNITY.org")
              "overwrite-existing-file"))
 
-(defun spacemacs//copy-fetched-docs-html-to-pub-root (project-plist)
+(defun spacemacs//copy-fetched-docs-html-to-pub-root (project-plist publish-target)
   "Move CONTRIBUTING.html and COMMUNITY.html to `publish-target'.
 See `spacemacs//fetch-docs-from-root'"
   (dolist (file-name '("CONTRIBUTING.html" "COMMUNITY.html"))
@@ -312,7 +312,7 @@ preprocessors for the exported .org files."
              :publishing-directory ,(concat publish-target "doc/")
              :publishing-function org-html-publish-to-html
              :preparation-function spacemacs//fetch-docs-from-root
-             :completion-function spacemacs//copy-fetched-docs-html-to-pub-root
+             :completion-function (lambda (project-plist) (spacemacs//copy-fetched-docs-html-to-pub-root projet-plist publish-target))
              :headline-levels 4
              :html-head ,header)
             ("layers-doc"
