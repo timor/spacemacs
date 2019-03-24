@@ -87,6 +87,68 @@ tarballs.")
   "Absolute path to the file containing the current stable elpa repository
 version")
 
+(defvar configuration-layer-elpa-archives nil
+  "List of ELPA archives required by Spacemacs. This value is set by the lock
+file.")
+
+(defvar configuration-layer-exclude-all-layers nil
+  "If non nil then only the distribution layer is loaded.")
+
+(defvar configuration-layer-force-distribution nil
+  "If set, bypass the user's choice `dotspacemacs-distribution'.")
+
+(defvar configuration-layer--package-archives-refreshed nil
+  "Non nil if package archives have already been refreshed.")
+
+(defvar configuration-layer--load-packages-files nil
+  "If non-nil force loading `packages.el' files when creating layer objects.")
+
+(defvar configuration-layer--used-layers '()
+  "A non-sorted list of used layer names.")
+
+(defvar configuration-layer--indexed-layers (make-hash-table :size 1024)
+  "Hash map to index `cfgl-layer' objects by their names.")
+
+(defvar configuration-layer--used-packages '()
+  "An alphabetically sorted list of used package names.")
+
+(defvar configuration-layer--indexed-packages (make-hash-table :size 2048)
+  "Hash map to index `cfgl-package' objects by their names.")
+
+(defvar configuration-layer--check-new-version-error-packages nil
+  "A list of all packages that were skipped during last update attempt.")
+
+(defvar configuration-layer--protected-packages nil
+  "A list of packages that will be protected from removal as orphans.")
+
+(defvar configuration-layer--lazy-mode-alist nil
+  "Association list where the key is a mode and the value a regexp.")
+
+(defvar configuration-layer--inhibit-errors nil
+  "If non-nil then error messages emitted by the layer system are ignored.")
+
+(defvar configuration-layer--inhibit-warnings nil
+  "If non-nil then warning messages emitted by the layer system are ignored.")
+
+(defvar configuration-layer--package-properties-read-onlyp nil
+  "If non-nil then package properties are read only and cannot be overridden by
+`configuration-layer/make-package'.")
+
+(defvar configuration-layer--declared-layers-usedp nil
+  "If non-nil then declared layers are considered to be used.")
+
+(defvar configuration-layer-error-count nil
+  "Non nil indicates the number of errors occurred during the
+installation of initialization.")
+
+(defvar configuration-layer-categories '()
+  "List of strings corresponding to category names. A category is a
+directory with a name starting with `+'.")
+
+(defvar update-packages-alist '()
+  "Used to collect information about rollback packages in the
+cache folder.")
+
 (defun configuration-layer/elpa-directory (root)
   "Evaluate the correct package subdirectory of ROOT. This is
 done according to the value of `dotspacemacs-elpa-subdirectory'.
@@ -352,68 +414,6 @@ If `configuration-layer--package-properties-read-onlyp' is non-nil then VALUE
 is not set for the given SLOT."
   (unless configuration-layer--package-properties-read-onlyp
     (setf (slot-value pkg (intern (substring (symbol-name slot) 1))) value)))
-
-(defvar configuration-layer-elpa-archives nil
-  "List of ELPA archives required by Spacemacs. This value is set by the lock
-file.")
-
-(defvar configuration-layer-exclude-all-layers nil
-  "If non nil then only the distribution layer is loaded.")
-
-(defvar configuration-layer-force-distribution nil
-  "If set, bypass the user's choice `dotspacemacs-distribution'.")
-
-(defvar configuration-layer--package-archives-refreshed nil
-  "Non nil if package archives have already been refreshed.")
-
-(defvar configuration-layer--load-packages-files nil
-  "If non-nil force loading `packages.el' files when creating layer objects.")
-
-(defvar configuration-layer--used-layers '()
-  "A non-sorted list of used layer names.")
-
-(defvar configuration-layer--indexed-layers (make-hash-table :size 1024)
-  "Hash map to index `cfgl-layer' objects by their names.")
-
-(defvar configuration-layer--used-packages '()
-  "An alphabetically sorted list of used package names.")
-
-(defvar configuration-layer--indexed-packages (make-hash-table :size 2048)
-  "Hash map to index `cfgl-package' objects by their names.")
-
-(defvar configuration-layer--check-new-version-error-packages nil
-  "A list of all packages that were skipped during last update attempt.")
-
-(defvar configuration-layer--protected-packages nil
-  "A list of packages that will be protected from removal as orphans.")
-
-(defvar configuration-layer--lazy-mode-alist nil
-  "Association list where the key is a mode and the value a regexp.")
-
-(defvar configuration-layer--inhibit-errors nil
-  "If non-nil then error messages emitted by the layer system are ignored.")
-
-(defvar configuration-layer--inhibit-warnings nil
-  "If non-nil then warning messages emitted by the layer system are ignored.")
-
-(defvar configuration-layer--package-properties-read-onlyp nil
-  "If non-nil then package properties are read only and cannot be overridden by
-`configuration-layer/make-package'.")
-
-(defvar configuration-layer--declared-layers-usedp nil
-  "If non-nil then declared layers are considered to be used.")
-
-(defvar configuration-layer-error-count nil
-  "Non nil indicates the number of errors occurred during the
-installation of initialization.")
-
-(defvar configuration-layer-categories '()
-  "List of strings corresponding to category names. A category is a
-directory with a name starting with `+'.")
-
-(defvar update-packages-alist '()
-  "Used to collect information about rollback packages in the
-cache folder.")
 
 (defun configuration-layer/load-lock-file ()
   "Load the .lock file"
