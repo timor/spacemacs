@@ -197,6 +197,63 @@ subdirectory of ROOT is used."
 (defconst configuration-layer-rollback-info "rollback-info"
   "Spacemacs rollback information file.")
 
+(defclass cfgl-package ()
+  ((name :initarg :name
+         :type symbol
+         :documentation "Name of the package.")
+   (min-version :initarg :min-version
+                :initform nil
+                :type list
+                :documentation "Minimum version to install as a version list.")
+   (owners :initarg :owners
+           :initform nil
+           :type list
+           :documentation "The layer defining the init function.")
+   (pre-layers :initarg :pre-layers
+               :initform '()
+               :type list
+               :documentation "List of layers with a pre-init function.")
+   (post-layers :initarg :post-layers
+                :initform '()
+                :type list
+                :documentation "List of layers with a post-init function.")
+   (location :initarg :location
+             :initform elpa
+             :type (satisfies (lambda (x)
+                                (or (stringp x)
+                                    (memq x '(built-in local site elpa))
+                                    (and (listp x) (eq 'recipe (car x))))))
+             :documentation "Location of the package.")
+   (toggle :initarg :toggle
+           :initform t
+           :type (satisfies (lambda (x) (or (symbolp x) (listp x))))
+           :documentation
+           "Package is enabled/installed if toggle evaluates to non-nil.")
+   (step :initarg :step
+         :initform nil
+         :type (satisfies (lambda (x) (member x '(nil bootstrap pre))))
+         :documentation "Initialization step.")
+   (lazy-install :initarg :lazy-install
+                 :initform nil
+                 :type boolean
+                 :documentation
+                 "If non-nil then the package needs to be installed")
+   (protected :initarg :protected
+              :initform nil
+              :type boolean
+              :documentation
+              "If non-nil then this package cannot be excluded.")
+   (excluded :initarg :excluded
+             :initform nil
+             :type boolean
+             :documentation
+             "If non-nil this package is excluded from all layers.")
+   (requires :initarg :requires
+             :initform nil
+             :type list
+             :documentation
+             "Packages that must be enabled for this package to be enabled.")))
+
 (defclass cfgl-layer ()
   ((name :initarg :name
          :type symbol
@@ -299,64 +356,7 @@ If PROPS is non-nil then return packages as lists along with their properties."
                      (if props x pkg-name))))
                (oref layer packages)))))
 
-(defclass cfgl-package ()
-  ((name :initarg :name
-         :type symbol
-         :documentation "Name of the package.")
-   (min-version :initarg :min-version
-                :initform nil
-                :type list
-                :documentation "Minimum version to install as a version list.")
-   (owners :initarg :owners
-           :initform nil
-           :type list
-           :documentation "The layer defining the init function.")
-   (pre-layers :initarg :pre-layers
-               :initform '()
-               :type list
-               :documentation "List of layers with a pre-init function.")
-   (post-layers :initarg :post-layers
-                :initform '()
-                :type list
-                :documentation "List of layers with a post-init function.")
-   (location :initarg :location
-             :initform elpa
-             :type (satisfies (lambda (x)
-                                (or (stringp x)
-                                    (memq x '(built-in local site elpa))
-                                    (and (listp x) (eq 'recipe (car x))))))
-             :documentation "Location of the package.")
-   (toggle :initarg :toggle
-           :initform t
-           :type (satisfies (lambda (x) (or (symbolp x) (listp x))))
-           :documentation
-           "Package is enabled/installed if toggle evaluates to non-nil.")
-   (step :initarg :step
-         :initform nil
-         :type (satisfies (lambda (x) (member x '(nil bootstrap pre))))
-         :documentation "Initialization step.")
-   (lazy-install :initarg :lazy-install
-                 :initform nil
-                 :type boolean
-                 :documentation
-                 "If non-nil then the package needs to be installed")
-   (protected :initarg :protected
-              :initform nil
-              :type boolean
-              :documentation
-              "If non-nil then this package cannot be excluded.")
-   (excluded :initarg :excluded
-             :initform nil
-             :type boolean
-             :documentation
-             "If non-nil this package is excluded from all layers.")
-   (requires :initarg :requires
-             :initform nil
-             :type list
-             :documentation
-             "Packages that must be enabled for this package to be enabled.")))
-
-(defmethod cfgl-package-toggled-p ((pkg cfgl-package) &optional inhibit-messages)
+(cl-defmethod cfgl-package-toggled-p ((pkg cfgl-package) &optional inhibit-messages)
   "Evaluate the `toggle' slot of passed PKG.
 If INHIBIT-MESSAGES is non nil then any message emitted by the toggle evaluation
 is ignored."
