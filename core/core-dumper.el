@@ -8,6 +8,7 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
+(require 'core-dotspacemacs)
 
 (defvar spacemacs-dump-mode 'not-dumped
   "Spacemacs dump mode, can be `not-dumped', `dumped' or `dumping'.")

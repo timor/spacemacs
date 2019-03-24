@@ -141,6 +141,7 @@ Supported properties:
        `((dolist (val ',def-key)
           (define-key (eval (car val)) (kbd (cdr val)) ',func)))))))
 
+(declare-function space-doc-mode "ext:spacedoc")
 (defun spacemacs/prettify-org-buffer ()
   "Apply visual enchantments to the current buffer.
 The buffer's major mode should be `org-mode'."

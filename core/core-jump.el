@@ -73,6 +73,7 @@ sets `spacemacs-jump-handlers' in buffers of that mode."
 ;; `describe-function' from correctly finding the source.
 ;;
 ;; See discussion on https://github.com/syl20bnr/spacemacs/pull/6771
+(declare-function evil-set-command-property "ext:evil-common")
 (with-eval-after-load 'evil
   (evil-set-command-property 'spacemacs/jump-to-definition :jump t))
 

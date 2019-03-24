@@ -411,6 +411,10 @@ List sizes may be nil, in which case
   "Run `spacemacs/prettify-org-buffer' when
 visiting README.org files of Spacemacs.")
 
+;; used later as buffer-locals, should probably be defined somewhere else
+(defvar spacemacs--buffer-project-name)
+(defvar spacemacs--buffer-abbreviated-filename)
+
 (defun dotspacemacs//prettify-spacemacs-docs ()
   "Run `spacemacs/prettify-org-buffer' if `buffer-file-name'
 has `spacemacs-start-directory'"
@@ -594,9 +598,10 @@ before copying the file if the destination already exists."
 (defun dotspacemacs//ido-completing-read (prompt candidates)
   "Call `ido-completing-read' with a CANDIDATES alist where the key is
 a display strng and the value is the actual value to return."
-  (let ((ido-max-window-height (1+ (length candidates))))
-    (cadr (assoc (ido-completing-read prompt (mapcar 'car candidates))
-                 candidates))))
+  (spacemacs|expect-bound-variables (ido-max-window-height)
+    (let ((ido-max-window-height (1+ (length candidates))))
+     (cadr (assoc (ido-completing-read prompt (mapcar 'car candidates))
+                  candidates)))))
 
 (defun dotspacemacs/maybe-install-dotfile ()
   "Install the dotfile if it does not exist."
@@ -771,7 +776,8 @@ error recovery."
         dotspacemacs-install-packages
         (passed-tests 0) (total-tests 0))
     (load dotspacemacs-filepath)
-    (dotspacemacs/layers)
+    (if (fboundp 'dotspacemacs/layers) (dotspacemacs/layers)
+      (error "Function `dotspacemacs/layers' not defined!"))
     (spacemacs//test-list
      'stringp 'dotspacemacs-configuration-layer-path
      "is a string" "path")

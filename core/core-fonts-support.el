@@ -106,15 +106,19 @@ the mode will not show in the mode line."
          (setcdr cell '(,unicode ,ascii))
        (push '(,mode ,unicode ,ascii) spacemacs--diminished-minor-modes))))
 
+(declare-function diminish-undo "ext:diminish") ;forward
 (defun spacemacs/diminish-undo (mode)
   "Restore the diminished lighter."
   (interactive
-   (list (read (completing-read
-                "Restore what diminished mode: "
-                (cons (list "diminished-modes")
-                      (mapcar (lambda (x) (list (symbol-name (car x))))
-                              diminished-mode-alist))
-                nil t nil 'diminish-history-symbols))))
+   (spacemacs|expect-bound-variables (dimished-mode-alist)
+     (list (read (completing-read
+                 "Restore what diminished mode: "
+                 (cons (list "diminished-modes")
+                       (mapcar (lambda (x) (list (symbol-name (car x))))
+                               (if (boundp 'diminished-mode-alist)
+                                   diminished-mode-alist
+                                 (error "Variable `diminished-mode-alist' unbound."))))
+                 nil t nil 'diminish-history-symbols)))))
   ;; remove the `mode' entry from spacemacs own list
   (setq spacemacs--diminished-minor-modes
         (delq nil (mapcar (lambda (x) (unless (eq (car x) mode) x))

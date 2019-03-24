@@ -8,6 +8,7 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
+(require 'core-dotspacemacs)
 
 (defun spacemacs/display-and-copy-version ()
   "Echo the current spacemacs version and copy it."

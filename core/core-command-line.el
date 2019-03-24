@@ -9,6 +9,11 @@
 ;;
 ;;; License: GPLv3
 
+(require 'core-debug)
+;; (require 'core-configuration-layer)     ; mutual recursion problem
+(defvar configuration-layer-exclude-all-layers) ;forward
+(defvar configuration-layer-force-distribution) ;forward
+
 (defvar spacemacs-force-resume-layouts nil
   "If non-nil force the current emacs instance to resume layouts
   at start time despite the value of `dotspacemacs-auto-resume-layouts'.")

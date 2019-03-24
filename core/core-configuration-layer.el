@@ -18,20 +18,21 @@
 (require 'warnings)
 (require 'help-mode)
 (require 'ht)
+(require 'url-http)
+(require 'core-globals)
 (require 'core-dotspacemacs)
 (require 'core-funcs)
 (require 'core-progress-bar)
 (require 'core-spacemacs-buffer)
+(require 'core-command-line)            ; mutual recursion problem
+(require 'core-dumper)
+(require 'quelpa)
 
 (defvar configuration-layer--refresh-package-timeout dotspacemacs-elpa-timeout
   "Timeout in seconds to reach a package archive page.")
 
 (defvar configuration-layer--last-dotspacemacs-configuration-layers-file
   (concat spacemacs-cache-directory "last-configuration-layers"))
-
-(defconst configuration-layer-template-directory
-  (expand-file-name (concat spacemacs-core-directory "templates/"))
-  "Configuration layer templates directory.")
 
 (defconst configuration-layer-directory
   (expand-file-name (concat spacemacs-start-directory "layers/"))
@@ -676,6 +677,9 @@ To prevent package from being installed or uninstalled set the variable
     (when (file-exists-p file)
       (spacemacs-buffer/message "Loading auto-layer file...")
       (configuration-layer/load-file file))))
+
+(declare-function ivy-read "ext:ivy")
+(declare-function helm "ext:helm")
 
 (defun configuration-layer/create-layer ()
   "Ask the user for a configuration layer name and the layer

@@ -16,6 +16,7 @@
 (require 'f)
 (require 'toc-org)
 (require 'org-id)
+(require 'core-configuration-layer)
 
 (defvar spacemacs--category-names
   '(("config-files" . "Configuration files")

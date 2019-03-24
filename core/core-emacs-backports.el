@@ -12,6 +12,7 @@
 ;; nothing for now
 
 (provide 'core-emacs-backports)
+(require 'battery)
 
 (when (version< emacs-version "26")
   ;; backport fix for macOS battery status

@@ -13,6 +13,8 @@
 ;;
 ;;; Code:
 
+(require 'recentf)
+
 (defconst spacemacs-buffer-version-info "0.300"
   "Current version used to display addition release information.")
 
