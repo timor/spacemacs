@@ -705,7 +705,7 @@ If ARG is non nil then Ask questions to the user before installing the dotfile."
            (fs (format-spec-make
                 ?a abbreviated-file-name
                 ?t project-name
-                ?S system-name
+                ?S (system-name)
                 ?I invocation-name
                 ?U (or (getenv "USER") "")
                 ?b "%b"
