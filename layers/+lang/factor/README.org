@@ -11,6 +11,7 @@
 - [[#key-bindings][Key bindings]]
   - [[#factor-mode-editing-source-files][factor-mode (editing source files)]]
   - [[#fuel-listener-mode][fuel-listener-mode]]
+  - [[#fuel-help-mode][fuel-help-mode]]
 - [[#snippets][Snippets]]
 
 * Description
@@ -78,6 +79,15 @@ To use this layer, add it to your =./spacemacs= file. Add =factor= to the
 | ~SPC m h~   | Help for word at point    |
 | ~SPC m v~   | Edit vocab                |
 | ~SPC m S v~ | Scaffold vocab            |
+
+** fuel-help-mode
+
+Differences from the default bindings:
+
+| Key binding | Description                                      |
+|-------------+--------------------------------------------------|
+| ~H~         | Help for word or vocab at point (instead of ~h~) |
+
 
 * Snippets
 This layer provides a yasnippet for colon definitions, which can be expanded
