@@ -42,6 +42,7 @@
               ("me" . "eval")
               ("mc" . "compile")
               ("mg" . "nav")
+              ("mr" . "refactor")
               ("ms" . "repl")
               ("mS" . "scaffold")))
       (spacemacs/set-leader-keys-for-major-mode 'factor-mode
