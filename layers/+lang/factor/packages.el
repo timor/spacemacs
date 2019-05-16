@@ -85,7 +85,7 @@
         "v" 'fuel-edit-vocabulary
         "r" 'fuel-refresh-all
         "Ts" 'fuel-stack-mode
-        "w" 'fuel-help
+        "h" 'fuel-help
         "Sv" 'fuel-scaffold-vocab
         )
 
