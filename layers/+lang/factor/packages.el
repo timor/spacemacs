@@ -49,6 +49,7 @@
         "'" 'run-factor
 
         "cc" 'fuel-run-file
+        "cr" 'fuel-refresh-all
 
         "ef" 'fuel-eval-definition
         "er" 'fuel-eval-region

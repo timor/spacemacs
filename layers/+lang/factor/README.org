@@ -39,6 +39,7 @@ To use this layer, add it to your =./spacemacs= file. Add =factor= to the
 |-------------+-----------------------------------------------------|
 | ~SPC m '~   | Jump to the factor listener, start if required      |
 | ~SPC m c c~ | Compile and run the current file                    |
+| ~SPC m c r~ | Refresh all loaded vocabs                           |
 |             |                                                     |
 | ~SPC m e f~ | Evaluate definition at point                        |
 | ~SPC m e r~ | Evaluate region                                     |
