@@ -17,7 +17,6 @@
     yasnippet
     ))
 
-;; for some reason, the following does not work
 (defun factor/post-init-yasnippet ()
   (add-to-list 'yas-snippet-dirs (expand-file-name
                                  "snippets"
