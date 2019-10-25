@@ -1824,9 +1824,11 @@ RNAME is the name symbol of another existing layer."
   "Install PKG from a recipe."
   (let* ((pkg-name (oref pkg :name))
          (layer (car (oref pkg :owners)))
-         (recipe (cons pkg-name (cdr (oref pkg :location)))))
+         (loc (oref pkg :location))
+         (recipe (cons pkg-name (cdr loc)))
+         (quelpa-plist (plist-get (cdr loc) :props)))
     (if recipe
-        (quelpa recipe)
+        (apply 'quelpa recipe quelpa-plist)
       (configuration-layer//warning
        (concat "Cannot find any recipe for package %S! Be sure "
                "to add a recipe for it in alist %S.")
