@@ -260,7 +260,7 @@ Return nil if the package is already installed and should not be upgraded."
                        (error
                         (error "Failed to checkout `%s': `%s'"
                                name (error-message-string err))))))
-        (when (quelpa-version>-p name version)
+        (when (or quelpa--force (quelpa-version>-p name version))
           version)))))
 
 (defun quelpa-build (rcp)
@@ -635,6 +635,9 @@ seconds; the server cuts off after 10 requests in 20 seconds.")
 
 (defvar quelpa-build--wiki-min-request-interval 3
   "The shortest permissible interval between successive requests for Emacswiki URLs.")
+
+(defvar quelpa--force nil
+  "Dynamic Variable, when set, quelpa-checkout will override old package versions")
 
 (defmacro quelpa-build--with-wiki-rate-limit (&rest body)
   "Rate-limit BODY code passed to this macro to match EmacsWiki's rate limiting."
@@ -1748,13 +1751,19 @@ If t, `quelpa' tries to do an upgrade.
 
 :stable
 
-If t, `quelpa' tries building the stable version of a package."
+If t, `quelpa' tries building the stable version of a package.
+
+:force
+
+If t, `quelpa' will, in addition to :upgrade, override newer installed package versions."
   (while plist
     (let ((key (car plist))
           (value (cadr plist)))
       (pcase key
         (:upgrade (setq quelpa-upgrade-p value))
-        (:stable (setq quelpa-stable-p value))))
+        (:stable (setq quelpa-stable-p value))
+        (:force (setq quelpa-upgrade-p value
+                      quelpa--force value))))
     (setq plist (cddr plist))))
 
 (defun quelpa-package-install-file (file)
@@ -1838,7 +1847,10 @@ With prefix FORCE, packages will all be upgraded discarding local changes."
       (when quelpa-self-upgrade-p
         (quelpa-self-upgrade))
       (setq quelpa-cache
-            (cl-remove-if-not #'package-installed-p quelpa-cache :key #'car))
+            (cl-remove-if (lambda (package)
+                            (or (eq package 'quelpa)
+                                (not (package-installed-p package))))
+                          quelpa-cache :key #'car))
       (mapc (lambda (item)
               (when (package-installed-p (car (quelpa-arg-rcp item)))
                 (quelpa item :force force)))
@@ -1887,6 +1899,7 @@ nil."
   (when (quelpa-setup-p) ;if init fails we do nothing
     (let* ((quelpa-upgrade-p (if current-prefix-arg t quelpa-upgrade-p)) ;shadow `quelpa-upgrade-p'
            (quelpa-stable-p quelpa-stable-p) ;shadow `quelpa-stable-p'
+           (quelpa--force nil) ; default value for :force plist argument
            (cache-item (if (symbolp arg) (list arg) arg)))
       (quelpa-parse-plist plist)
       (quelpa-parse-stable cache-item)
