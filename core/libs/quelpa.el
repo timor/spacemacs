@@ -260,8 +260,9 @@ Return nil if the package is already installed and should not be upgraded."
                        (error
                         (error "Failed to checkout `%s': `%s'"
                                name (error-message-string err))))))
-        (when (or quelpa--force (quelpa-version>-p name version))
-          version)))))
+        (or quelpa--force-version
+            (when (quelpa-version>-p name version)
+              version))))))
 
 (defun quelpa-build (rcp)
   "Build a package from the given recipe RCP.
@@ -636,8 +637,8 @@ seconds; the server cuts off after 10 requests in 20 seconds.")
 (defvar quelpa-build--wiki-min-request-interval 3
   "The shortest permissible interval between successive requests for Emacswiki URLs.")
 
-(defvar quelpa--force nil
-  "Dynamic Variable, when set, quelpa-checkout will override old package versions")
+(defvar quelpa--force-version nil
+  "Dynamic Variable, when set, quelpa-checkout will override fetched package version with this.")
 
 (defmacro quelpa-build--with-wiki-rate-limit (&rest body)
   "Rate-limit BODY code passed to this macro to match EmacsWiki's rate limiting."
@@ -1753,17 +1754,17 @@ If t, `quelpa' tries to do an upgrade.
 
 If t, `quelpa' tries building the stable version of a package.
 
-:force
+:force-version
 
-If t, `quelpa' will, in addition to :upgrade, override newer installed package versions."
+If t, `quelpa' will, in addition to :upgrade, assume the string argument to this as version suffix"
   (while plist
     (let ((key (car plist))
           (value (cadr plist)))
       (pcase key
         (:upgrade (setq quelpa-upgrade-p value))
         (:stable (setq quelpa-stable-p value))
-        (:force (setq quelpa-upgrade-p value
-                      quelpa--force value))))
+        (:force-version (setq quelpa-upgrade-p t
+                              quelpa--force-version value))))
     (setq plist (cddr plist))))
 
 (defun quelpa-package-install-file (file)
@@ -1899,7 +1900,7 @@ nil."
   (when (quelpa-setup-p) ;if init fails we do nothing
     (let* ((quelpa-upgrade-p (if current-prefix-arg t quelpa-upgrade-p)) ;shadow `quelpa-upgrade-p'
            (quelpa-stable-p quelpa-stable-p) ;shadow `quelpa-stable-p'
-           (quelpa--force nil) ; default value for :force plist argument
+           (quelpa--force-version nil) ; default value for :force-version plist argument
            (cache-item (if (symbolp arg) (list arg) arg)))
       (quelpa-parse-plist plist)
       (quelpa-parse-stable cache-item)
