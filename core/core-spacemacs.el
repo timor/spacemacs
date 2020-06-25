@@ -86,7 +86,23 @@ the final step of executing code in `emacs-startup-hook'.")
                 ;; overlapped in terminal mode. The GUI specific `<C-i>' is used
                 ;; instead.
                 evil-want-C-i-jump nil)
-  (dotspacemacs/load-file)
+  ;; Nixos adjustment, allows loading a different dotfile then the default one,
+  ;; but only during initialization. Subsequent uses of the dotfile location
+  ;; should point to the one the user is supposed to edit.
+  (let* ((dotspacemacs-filepath-orig dotspacemacs-filepath)
+         (dotspacemacs-filepath
+          (cond ((getenv "NIX_DOTSPACEMACS"))
+                (t dotspacemacs-filepath))))
+    (when (not (string= dotspacemacs-filepath-orig
+                      dotspacemacs-filepath))
+      (let ((buf1 (find-file-noselect dotspacemacs-filepath nil t))
+            (buf2 (find-file-noselect dotspacemacs-filepath-orig nil t)))
+        (when (not (= 0 (compare-buffer-substrings buf1 nil nil buf2 nil nil)))
+          (warn "Custom dotfile %s differs from loaded dotfile %s.
+          Rebuild spacemacs with nix to resolve." dotspacemacs-filepath-orig dotspacemacs-filepath))
+        (kill-buffer buf1)
+        (kill-buffer buf2)))
+    (dotspacemacs/load-file))
   (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
   (when dotspacemacs-undecorated-at-startup
     ;; this should be called before toggle-frame-maximized
