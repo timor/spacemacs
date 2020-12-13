@@ -101,12 +101,14 @@ subdirectory of ROOT is used."
     configuration-layer-elpa-subdirectory
     (if (not dotspacemacs-elpa-subdirectory)
         root
-      (let ((subdir (if (eq 'emacs-version dotspacemacs-elpa-subdirectory)
-                        (format "%d%s%d"
-                                emacs-major-version
-                                version-separator
-                                emacs-minor-version)
-                      (eval dotspacemacs-elpa-subdirectory))))
+      (let ((subdir (if spacemacs-nix-declared-p
+                        spacemacs-nix-suffix
+                      (if (eq 'emacs-version dotspacemacs-elpa-subdirectory)
+                          (format "%d%s%d"
+                                  emacs-major-version
+                                  version-separator
+                                  emacs-minor-version)
+                        (eval dotspacemacs-elpa-subdirectory)))))
         (expand-file-name subdir root))))))
 
 (defun configuration-layer/get-elpa-package-install-directory (pkg)
