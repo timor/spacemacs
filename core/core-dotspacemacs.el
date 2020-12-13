@@ -41,7 +41,9 @@ their configuration.")
        (no-env-dir-default (expand-file-name
                             (concat user-home-directory
                                     ".spacemacs.d/")))
-       (default-init (expand-file-name ".spacemacs" user-home-directory)))
+       (default-init (expand-file-name ".spacemacs" user-home-directory))
+       (default-nix-init (when spacemacs-nix-declared-p
+                           (concat no-env-dir-default ".spacemacs-" (getenv "NIX_SPACEMACS_SUFFIX")))))
   (defconst dotspacemacs-directory
     (cond
      ((and env (file-exists-p env-dir)) env-dir)
@@ -58,6 +60,7 @@ directories exist, this variable will be nil.")
                                         "init.el"))))
       (cond
        (env-init)
+       (default-nix-init)
        ((file-exists-p default-init) default-init)
        ((and dotspacemacs-directory (file-exists-p spacemacs-dir-init))
         spacemacs-dir-init)
