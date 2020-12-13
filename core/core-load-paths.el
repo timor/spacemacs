@@ -37,10 +37,13 @@
   (concat (file-name-directory (or load-file-name (buffer-file-name))) "../")
   "Spacemacs start directory.")
 
-;; ~/.emacs.d/assets
 (defconst spacemacs-assets-directory
   (concat spacemacs-start-directory "assets/")
   "Spacemacs assets directory.")
+
+(defconst spacemacs-nix-declared-p (getenv "NIX_SPACEMACS_SUFFIX"))
+(defconst spacemacs-nix-suffix (or (getenv "NIX_SPACEMACS_SUFFIX") ""))
+(defconst spacemacs-nix-dotfile-path (getenv "NIX_DOTSPACEMACS"))
 
 ;; ~/.emacs.d/core
 (defconst spacemacs-core-directory

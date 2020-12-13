@@ -66,6 +66,22 @@
   "Whether or not spacemacs has finished initializing by completing
 the final step of executing code in `emacs-startup-hook'.")
 
+(defun spacemacs//init-nix-dotfile ()
+  "Custom dotfile handling if provided by declarative nix build."
+
+  (when spacemacs-nix-declared-p
+    ;; dotspacemacs-filepath is store-path dependent location in this case
+    (if (file-exists-p dotspacemacs-filepath)
+        (let ((buf1 (find-file-noselect dotspacemacs-filepath nil t))
+              (buf2 (find-file-noselect spacemacs-nix-dotfile-path nil t)))
+          (when (not (= 0 (compare-buffer-substrings buf1 nil nil buf2 nil nil)))
+            (warn "Eval-time dotfile %s differs from loaded dotfile %s.
+          Rebuild spacemacs with nix to resolve." spacemacs-nix-dotfile-path dotspacemacs-filepath))
+          (kill-buffer buf1)
+          (kill-buffer buf2))
+      (copy-file spacemacs-nix-dotfile-path dotspacemacs-filepath)
+      (set-file-modes dotspacemacs-filepath #o644))))
+
 (defun spacemacs/init ()
   "Perform startup initialization."
   (setq command-line-args (spacemacs//parse-command-line command-line-args))
@@ -89,20 +105,8 @@ the final step of executing code in `emacs-startup-hook'.")
   ;; Nixos adjustment, allows loading a different dotfile then the default one,
   ;; but only during initialization. Subsequent uses of the dotfile location
   ;; should point to the one the user is supposed to edit.
-  (let* ((dotspacemacs-filepath-orig dotspacemacs-filepath)
-         (dotspacemacs-filepath
-          (cond ((getenv "NIX_DOTSPACEMACS"))
-                (t dotspacemacs-filepath))))
-    (when (not (string= dotspacemacs-filepath-orig
-                      dotspacemacs-filepath))
-      (let ((buf1 (find-file-noselect dotspacemacs-filepath nil t))
-            (buf2 (find-file-noselect dotspacemacs-filepath-orig nil t)))
-        (when (not (= 0 (compare-buffer-substrings buf1 nil nil buf2 nil nil)))
-          (warn "Custom dotfile %s differs from loaded dotfile %s.
-          Rebuild spacemacs with nix to resolve." dotspacemacs-filepath-orig dotspacemacs-filepath))
-        (kill-buffer buf1)
-        (kill-buffer buf2)))
-    (dotspacemacs/load-file))
+  (spacemacs//init-nix-dotfile)
+  (dotspacemacs/load-file)
   (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
   (when dotspacemacs-undecorated-at-startup
     ;; this should be called before toggle-frame-maximized
@@ -126,7 +130,7 @@ the final step of executing code in `emacs-startup-hook'.")
   ;; effective ones.
   ;; Note: Loading custom-settings twice is not ideal since they can have side
   ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
-  (spacemacs/initialize-custom-file)
+  (spacemacs/initialize-nix-custom-file)
   ;; Commenting the first load although it is mentioned above that we must do it
   ;; I don't recall why we must load the custom settings twice and my experiment
   ;; seems to show that we don't need this double loading process anymore.

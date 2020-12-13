@@ -23,7 +23,7 @@
 (require 'core-dotspacemacs)
 
 (defvar spacemacs--custom-file (concat spacemacs-cache-directory
-                                       ".custom-settings"))
+                                       ".custom-settings" spacemacs-nix-suffix))
 
 (defun spacemacs/initialize-custom-file ()
   "Initialize the custom file.
@@ -43,6 +43,15 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
 ;; Spacemacs will copy its content to your dotfile automatically in the
 ;; function `dotspacemacs/emacs-custom-settings'.
 ;; Do not alter this file, use Emacs customize interface instead.\n\n")))))
+
+(defun spacemacs/initialize-nix-custom-file ()
+  "If declarative nix Spacemacs is used, set up custom value of
+  `custom-file', bypassing regular behavior."
+  (if spacemacs-nix-declared-p
+      (progn
+        (setq custom-file (concat spacemacs--custom-file "-" spacemacs-nix-suffix))
+        (when (file-exists-p custom-file) (load custom-file)))
+    (spacemacs/initialize-custom-file)))
 
 (defun spacemacs/initialize-custom-file-sync ()
   "Initialize syncing of the custom file to the dotfile."
