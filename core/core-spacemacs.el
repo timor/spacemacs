@@ -244,11 +244,12 @@ Note: the hooked function is not executed when in dumped mode."
      ;; them in his/her ~/.spacemacs file
      (dotspacemacs|call-func dotspacemacs/user-config
                              "Calling dotfile user config...")
-     (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
-                             "Calling dotfile Emacs custom settings...")
+     (when (file-exists-p custom-file) (load custom-file))
+     ;; (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
+     ;;                         "Calling dotfile Emacs custom settings...")
      ;; don't write custom settings into the dotfile before loading them,
      ;; otherwise https://github.com/syl20bnr/spacemacs/issues/10504 happens
-     (spacemacs/initialize-custom-file-sync)
+     ;; Deactivated under nix (spacemacs/initialize-custom-file-sync)
      (run-hooks 'spacemacs-post-user-config-hook)
      (setq spacemacs-post-user-config-hook-run t)
      (when (fboundp dotspacemacs-scratch-mode)
