@@ -33,16 +33,12 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
   ;; has not been set by the user
   (when (null custom-file)
     (setq custom-file spacemacs--custom-file))
-  ;; initialize the cache file contents
-  (unless (or (not (string-equal custom-file spacemacs--custom-file))
-              (file-exists-p spacemacs--custom-file))
-    (with-temp-file spacemacs--custom-file
-      (let ((standard-output (current-buffer)))
-        (princ ";; -*- mode: emacs-lisp -*-\n")
-        (princ ";; This file is where Emacs writes custom variables.
-;; Spacemacs will copy its content to your dotfile automatically in the
-;; function `dotspacemacs/emacs-custom-settings'.
-;; Do not alter this file, use Emacs customize interface instead.\n\n")))))
+  ;; Actually load the file, or we are going to loose all customization if some
+  ;; clown touches customize-set-variable before the startup hook...
+  ;; Which seems to happen after package updates...
+  (when (and (stringp custom-file)
+             (file-exists-p custom-file))
+    (load custom-file)))
 
 (defun spacemacs/initialize-custom-file-sync ()
   "Initialize syncing of the custom file to the dotfile."
