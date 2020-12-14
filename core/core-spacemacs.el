@@ -130,7 +130,7 @@ the final step of executing code in `emacs-startup-hook'.")
   ;; effective ones.
   ;; Note: Loading custom-settings twice is not ideal since they can have side
   ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
-  (spacemacs/initialize-nix-custom-file)
+  (spacemacs/initialize-custom-file)
   ;; Commenting the first load although it is mentioned above that we must do it
   ;; I don't recall why we must load the custom settings twice and my experiment
   ;; seems to show that we don't need this double loading process anymore.
