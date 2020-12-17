@@ -22,7 +22,7 @@
 
 (require 'core-dotspacemacs)
 
-(defvar spacemacs--custom-file (concat spacemacs-cache-directory
+(defvar spacemacs--custom-file (concat user-emacs-directory
                                        ".custom-settings"))
 
 (defun spacemacs/initialize-custom-file ()
